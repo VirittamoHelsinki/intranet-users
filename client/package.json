@@ -1,0 +1,40 @@
+{
+  "name": "users-client",
+  "author": "Veikko_Laine",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.4.0",
+    "axios-retry": "^3.6.0",
+    "bootstrap": "^5.3.1",
+    "dotenv": "^16.3.1",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.8.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.15.0",
+    "react-scripts": "^5.0.1",
+    "universal-cookie": "^4.0.4",
+    "zustand": "^4.4.1"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=production PORT=3459 react-scripts start",
+    "dev": "cross-env NODE_ENV=development PORT=3459 react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
