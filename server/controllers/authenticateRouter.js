@@ -20,7 +20,7 @@ authenticateRouter.post('/', async (req, res, next) => {
 
   if (!user) {
     // If there does not exist a user with the given email.
-    return res.status(401).json({ error: 'invalid username or password' })
+    return res.status(401).json({ error: 'invalid email or password' })
   }
 
   // Compare the body password to the saved password hash of the user.
@@ -28,16 +28,11 @@ authenticateRouter.post('/', async (req, res, next) => {
 
   if (!passwordCorrect) {
     // If the password is incorrect.
-    return res.status(401).json({ error: 'invalid username or password' })
-  }
-
-  const userForToken = {
-    username: user.username,
-    id: user._id
+    return res.status(401).json({ error: 'invalid email or password' })
   }
 
   // Sign a token.
-  const token = jwt.sign(userForToken, process.env.SECRET)
+  const token = user.generateJWT()
 
   // Return the user and the token.
   res.status(200).send({ token, ...User.format(user) })
@@ -65,21 +60,17 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
     const user = await User.findOne({ email })
 
     // If there does not exist an account with this email:
-    if (!user) return res.status(401).json({ error: 'invalid username or password' })
+    if (!user) return res.status(401).json({ error: 'invalid email or password' })
 
     const passwordCorrect = await bcrypt.compare(password, user.passwordHash)
 
     // If the password is incorrect:
     if (!passwordCorrect) {
-      return res.status(401).json({ error: 'invalid username or password' })
+      return res.status(401).json({ error: 'invalid email or password' })
     }
 
-    const userForToken = {
-      email: user.email,
-      id: user._id
-    }
-
-    const token = jwt.sign(userForToken, process.env.SECRET)
+    // Sign a token.
+    const token = user.generateJWT()
 
     // Confirm to the service that the user has been authenticated.
     const response = await axios.post(

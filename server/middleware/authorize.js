@@ -23,7 +23,6 @@ const requireAuthorization = async (req, res, next) => {
   try {
       // Parse the token from the authorization header
       const token = getTokenFrom(req)
-      console.log('token:', token)
 
       if (!token) {
           return res.status(401).json({ error: 'token missing or too short' })
