@@ -12,7 +12,9 @@ const authorizeRouter = require('express').Router();
 
 // Local imports.
 const User = require('../models/user');
-const { requireAuthorization } = require('../middleware/authorize')
+const {
+  requireAuthorization, addTokenToBlacklist
+} = require('../middleware/authorize')
 const { protocol, allowedDomains, domainKeys } = require('../config.js')
 
 
@@ -24,9 +26,7 @@ authorizeRouter.all('*', requireAuthorization)
 authorizeRouter.get('/', async (req, res, next) => {
     try {
       const { user } = res.locals
-
-      if (!user) return res.status(401).json({ error: 'No valid user token.' })
-  
+      
       res.json(User.format(user))
   
     } catch (exception) { next(exception) }
@@ -99,6 +99,19 @@ authorizeRouter.get('/:service/:level', async (req, res, next) => {
     }
 
     res.json({ authorization: true })
+
+  } catch (exception) { next(exception) }
+})
+
+
+// User can blacklist their token by logging out so that it
+// will no longer function for user authorization.
+authorizeRouter.post('/logout', async (req, res, next) => {
+  try {
+    // Add the token to the blacklist.
+    addTokenToBlacklist(req, res, next)
+
+    res.status(200).end()
 
   } catch (exception) { next(exception) }
 })

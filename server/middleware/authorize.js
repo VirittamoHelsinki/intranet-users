@@ -1,6 +1,47 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/user')
+//const User = require('../models/user')
 const { secret } = require('../config')
+
+// 1. Tokens are added on the blacklist when a user logs out.
+// 2. They are removed from the blacklist when they expire.
+// 3. Currently the blacklist is only kept in memory not
+// in the database, so the data in it is lost when the
+// server is restarted.
+// 4. The token expiration time should be short enough so
+// that the system doesent rely on this list too much.
+// key: token, value: Date variable with the expiration time.
+let tokenBlacklist = []
+let nextPrune = Date.now()
+
+// Remove expired tokens from the tokenStorage.
+const pruneTokenBlacklist = () => {
+ 
+  // Dont run the function if it has been run in the last 24 hours.
+  if (Date.now() < nextPrune) return
+  
+  // Remove expired tokens from the tokenBlacklist.
+  // verifying an expired token throws an error which is used
+  // in filtering them.
+  tokenBlacklist = tokenBlacklist.filter(token => {
+    try {
+      jwt.verify(token, secret)
+      return true
+    
+    } catch (error) { return false }
+  })
+
+  // Prune the blacklist once every 12 hours.
+  nextPrune = Date.now() + 1000 * 60 * 60 * 12
+}
+
+const addTokenToBlacklist = (req, res, next) => {
+  try {
+    const token = getTokenFrom(req)
+  
+    tokenBlacklist.push(token)
+  
+  } catch (error) { processTokenErrors(error, req, res, next) }
+}
 
 
 // Parse the token out of the authorization header.
@@ -17,10 +58,23 @@ const getTokenFrom = req => {
   return null
 }
 
+const processTokenErrors = (error, req, res, next) => {
+  if (error.name === 'TokenExpiredError') {
+    console.log('User token has expired!')
+    return res.status(401).json({ error: 'token expired' })
+  } else if (error.name === 'JsonWebTokenError') {
+    console.log('error.message:', error.message)
+    return res.status(401).json({ error: error.message })
+  
+  } else return next(error)
+}
 
 // Middleware that checks if the request has a valid token, in the authroziation header.
 const requireAuthorization = async (req, res, next) => {
   try {
+      // Check if it is time to prune the tokenBlacklist.
+      pruneTokenBlacklist()
+    
       // Parse the token from the authorization header
       const token = getTokenFrom(req)
 
@@ -28,33 +82,35 @@ const requireAuthorization = async (req, res, next) => {
           return res.status(401).json({ error: 'token missing or too short' })
       }
 
+      // Check if the token is on the blacklist.
+      if (tokenBlacklist.includes(token)) {
+        return res.status(401).json({ error: 'invalid token user has logged out.' })
+      }
+
       let decodedToken = {}
 
       decodedToken = jwt.verify(token, secret)
 
-      if (!decodedToken.id) {
+      if (!decodedToken._id) {
           return res.status(401).json({ error: 'invalid token' })
       }
 
-      const user = await User.findById(decodedToken.id)
-
-      if (!user) return res.status(401).json({ error: 'invalid token' })
-
-      res.locals.user = user
+      // Add the user data to the response locals, so that
+      // it can be used when checking user access rights.
+      res.locals.user = {
+        _id:    decodedToken._id,
+        email:  decodedToken.email,
+        admin:  decodedToken.admin,
+        access: decodedToken.access
+      }
 
       next()
 
-  } catch (error) {
-      if (error.name === 'JsonWebTokenError') {
-        console.log(error)
-        console.log('error.message:', error.message)
-          return res.status(401).json({ error: error.message })
-      
-      } else return next(error)
-  }
+  } catch (error) { processTokenErrors(error, req, res, next) }
 }
 
 
 module.exports = {
-  requireAuthorization
+  requireAuthorization,
+  addTokenToBlacklist
 }

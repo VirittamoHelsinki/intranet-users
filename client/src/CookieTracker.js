@@ -20,8 +20,14 @@ const CookieTracker = () => {
       // Initialize the user state with the token from the cookie.
       userApi.setToken(usersToken)
 
-      // Load user information from the server.
-      setUser(await userApi.get())
+      try {
+        // Load user information from the server.
+        setUser(await userApi.get())
+      
+      } catch (error) {
+        // If the token is invalid, remove it from the cookie.
+        cookies.remove('usersToken')
+      }
     }
   }
 

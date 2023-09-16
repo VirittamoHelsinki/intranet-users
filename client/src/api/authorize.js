@@ -20,4 +20,11 @@ const authorizeForService = async domain => {
   return response.data
 }
 
-export default { authorizeForService }
+// Logout the user from the user-service.
+const logout = async () => {
+  const response = await axios.get(`${url}/logout`, config())
+
+  return response.data
+}
+
+export default { authorizeForService, logout }

@@ -35,9 +35,10 @@ const userSchema = new mongoose.Schema({
 // Needs to use oldschool function syntax to access "this".
 userSchema.methods.generateJWT = function generateJWT() {
   return jwt.sign({
-    id: this._id,
+    _id: this._id,
     email: this.email,
-    admin: this.admin
+    admin: this.admin,
+    access: this.access
   }, secret,
   { expiresIn: '3d' })
 }

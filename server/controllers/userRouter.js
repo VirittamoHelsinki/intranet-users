@@ -56,7 +56,14 @@ userRouter.all('*', requireAuthorization)
 // A Client with a valid token can get their user data.
 userRouter.get('/', async (req, res, next) => {
   try {
-    const { user } = res.locals
+    let { _id } = res.locals.user
+
+    // Fetch user to make sure that the user received is up to date.
+    const user = await User.findById(_id)
+
+    if (!user) return res.status(401).json({
+      error: `Cannot find user with id: ${_id}`
+    })
 
     res.json(User.format(user))
 

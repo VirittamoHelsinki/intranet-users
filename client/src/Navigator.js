@@ -10,6 +10,7 @@ import Register from './pages/Register'
 import Reset from './pages/Reset'
 import Profile from './pages/Profile'
 
+import authorizeApi from './api/authorize'
 import userApi from './api/users'
 import commonApi from './api/common'
 import useStore from './store'
@@ -46,6 +47,7 @@ const Navigator = () => {
     const cookies = new Cookies()
     cookies.remove('usersToken')
     setUser(null)
+    await authorizeApi.logout()
   }
 
   const renderNavbar = () => {
