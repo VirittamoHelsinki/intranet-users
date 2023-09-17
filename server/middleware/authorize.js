@@ -74,7 +74,7 @@ const requireAuthorization = async (req, res, next) => {
   try {
       // Check if it is time to prune the tokenBlacklist.
       pruneTokenBlacklist()
-    
+
       // Parse the token from the authorization header
       const token = getTokenFrom(req)
 

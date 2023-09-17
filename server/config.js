@@ -10,9 +10,6 @@ const emailPW = process.env.SERVICE_EMAIL_PASSWORD
 // URL of this service.
 const url = process.env.DOMAIN
 
-// Used by the users service to identify itself to other apps and services.
-const  userServiceKey = process.env.USER_SERVICE_KEY
-
 const environmentMode = process.env.NODE_ENV
 
 // Development mode is default.
@@ -24,6 +21,9 @@ else if (environmentMode === 'production') mongoUrl = process.env.PRODUCTION_MON
 // Domains that are allowed to use this service.
 const allowedDomains = process.env.ALLOWED_DOMAINS.split(',')
 
+// domain keys are used to authorize requests with each domain.
+// the app using the domain needs to know the key for its domain
+// so that requests can be authorized.
 const domainKeys = {}
 
 // Map the allowed domains to their keys.

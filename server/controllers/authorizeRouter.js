@@ -39,7 +39,7 @@ authorizeRouter.get('/', async (req, res, next) => {
 // already has a valid token on the users service.
 // Returns a key that a client can use to get a token from
 // the service defined in the domain parameter.
-authorizeRouter.get('/:domain', async (req, res, next) => {
+authorizeRouter.get('/app/:domain', async (req, res, next) => {
   try {
     const { user } = res.locals
     const domain = req.params.domain.toLowerCase()
@@ -106,8 +106,9 @@ authorizeRouter.get('/:service/:level', async (req, res, next) => {
 
 // User can blacklist their token by logging out so that it
 // will no longer function for user authorization.
-authorizeRouter.post('/logout', async (req, res, next) => {
+authorizeRouter.get('/logout', async (req, res, next) => {
   try {
+
     // Add the token to the blacklist.
     addTokenToBlacklist(req, res, next)
 

@@ -15,7 +15,7 @@ const url = `${apiUrl}/authorize`
 // function when the user is already logged in to the user-service
 // and therefore they dont need to authenticate themselves again.
 const authorizeForService = async domain => {
-  const response = await axios.get(`${url}/${domain}`, config())
+  const response = await axios.get(`${url}/app/${domain}`, config())
 
   return response.data
 }

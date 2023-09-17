@@ -41,13 +41,13 @@ const Navigator = () => {
   }, [])
 
 
-  // Run when the  logout button is pressed.
+  // Run when the logout button is pressed.
   const logout = async () => {
+    await authorizeApi.logout()
     userApi.setToken(null)
     const cookies = new Cookies()
     cookies.remove('usersToken')
     setUser(null)
-    await authorizeApi.logout()
   }
 
   const renderNavbar = () => {
