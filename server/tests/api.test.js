@@ -32,10 +32,11 @@ describe('/authorize router tests', () => {
     })
     
     test('logout to blacklist a token', async () => {
-        const { token } = await api.post('/api/authenticate')
+        const response = await api.post('/api/authenticate')
                                    .send(manyUsers[1])
                                    .expect(200)
-        console.log('------- token -------', token)
+        console.log('response.data:', response.data)
+        const { token } = response.data
         await api.post('/api/authorize/logout')
                  .set('Authorization', `bearer ${token}`)
                  .expect(200)

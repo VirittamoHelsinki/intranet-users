@@ -41,7 +41,7 @@ userRouter.post('/', async (req, res) => {
   } catch (exception) {
     console.log(exception.message)
     if (exception.message.includes('User validation failed')){
-      res.status(400).json({ error: 'username not unique' })
+      res.status(400).json({ error: 'user validation failed' })
     } else {
       res.status(500).json({ error: 'something went wrong...' })
     }
