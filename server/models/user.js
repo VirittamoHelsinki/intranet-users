@@ -27,8 +27,14 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   access: [{
-    service: String,
-    level: Number
+    service: {
+      type: ObjectId,
+      ref: 'Service',
+    },
+    level: {
+      type: Number,
+      required: true
+    }
   }]
 })
 

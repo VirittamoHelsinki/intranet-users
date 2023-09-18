@@ -1,8 +1,13 @@
+// This router handles all requests that contain user authentication.
+// (Requests that require email/username and password.)
+
+// Npm imports.
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const axios = require('axios')
 const authenticateRouter = require('express').Router()
 
+// Local imports.
 const User = require('../models/user')
 const { protocol, allowedDomains, domainKeys } = require('../config.js')
 

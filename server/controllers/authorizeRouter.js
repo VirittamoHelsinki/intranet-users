@@ -11,7 +11,8 @@ const axios = require('axios')
 const authorizeRouter = require('express').Router();
 
 // Local imports.
-const User = require('../models/user');
+const User = require('../models/user')
+const Service = require('../models/service')
 const {
   requireAuthorization, addTokenToBlacklist
 } = require('../middleware/authorize')
@@ -50,7 +51,7 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
 
     // Confirm to the service that the user has been authenticated.
     const response = await axios.post(
-      `${protocol}://${domain}/api/users/authorization`,
+      `${protocol}://${domain}/api/authorize`,
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.
@@ -76,15 +77,21 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
 
 // Cheks whether the user has a high enough authorization level requested by
 // the service.
-authorizeRouter.get('/:service/:level', async (req, res, next) => {
+authorizeRouter.get('/service/:name/:level', async (req, res, next) => {
   try {
     const { user } = res.locals
-    const { service, level } = req.params
+    let { name, level } = req.params
 
     if (!user) return res.status(401).json({ error: 'No valid user token.' })
 
+    const service = await Service.findOne({ name })
+
+    if (!service) {
+      return res.status(401).json({ error: 'The service does not exist.'})
+    }
+
     // Find and access entry for the service from the list if it exists.
-    const access = user.access.find(a => a.service === service)
+    const access = user.access.find(a => a.service.equals(service._id))
     
     if (!access) {
       return res.status(401).json({
