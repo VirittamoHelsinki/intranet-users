@@ -6,8 +6,8 @@ let portalUrl = process.env.REACT_APP_PORTAL_URL_DEV
 let protocol = "http"
 
 if (environment === 'production'){
-    apiUrl = process.env.REACT_APP_API_URL
-    portalUrl = process.env.REACT_APP_PORTAL_URL
+    apiUrl = process.env.REACT_APP_API_URL_PROD
+    portalUrl = process.env.REACT_APP_PORTAL_URL_PROD
     //protocol = "https"
 }
 
