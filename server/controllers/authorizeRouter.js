@@ -14,7 +14,7 @@ const authorizeRouter = require('express').Router();
 const User = require('../models/user')
 const Service = require('../models/service')
 const {
-  requireAuthorization, addTokenToBlacklist
+  requireAuthorization, addTokenToBlacklist, getTokenFrom
 } = require('../middleware/authorize')
 const { protocol, allowedDomains, domainKeys } = require('../config.js')
 
@@ -44,6 +44,7 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
   try {
     const { user } = res.locals
     const domain = req.params.domain.toLowerCase()
+    const token = getTokenFrom(req)
 
     if (!allowedDomains.includes(domain)) {
       return res.status(401).json({ error: 'unauthorized domain' })
@@ -55,7 +56,10 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.
-      { email: user.email, domain_key: domainKeys[domain] }
+      {
+        email: user.email,
+        token,
+        domain_key: domainKeys[domain] }
     )
 
     // Get a one time use service_key that allows the redirected user to get,

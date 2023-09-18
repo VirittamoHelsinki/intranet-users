@@ -44,8 +44,7 @@ authenticateRouter.post('/', async (req, res, next) => {
 })
 
 
-// Route that does authentication for sites that do authorization
-// by themselves.
+// Authenticate user and authorize them to use a specific service.
 // Returns a key that a client can use to get a token from
 // the service defined in the domain parameter.
 authenticateRouter.post('/:domain', async (req, res, next) => {
@@ -79,11 +78,11 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
 
     // Confirm to the service that the user has been authenticated.
     const response = await axios.post(
-      `${protocol}://${domain}/api/users/authorization`,
+      `${protocol}://${domain}/api/authorize`,
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.
-      { email, domain_key: domainKeys[domain] }
+      { email, token, domain_key: domainKeys[domain] }
     )
 
     // Get a one time use service_key that allows the redirected user to get,
@@ -101,5 +100,6 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
 
   } catch (exception) {next(exception)}
 })
+
 
 module.exports = authenticateRouter

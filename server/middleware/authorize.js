@@ -112,5 +112,6 @@ const requireAuthorization = async (req, res, next) => {
 
 module.exports = {
   requireAuthorization,
-  addTokenToBlacklist
+  addTokenToBlacklist,
+  getTokenFrom
 }
