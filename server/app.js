@@ -19,6 +19,7 @@ const userRouter          = require('./controllers/userRouter')
 const authorizeRouter     = require('./controllers/authorizeRouter')
 const authenticateRouter  = require('./controllers/authenticateRouter')
 const passwordResetRouter = require('./controllers/passwordResetRouter')
+const serviceRouter       = require('./controllers/serviceRouter')
 
 const app = express()
 
@@ -46,6 +47,9 @@ app.use('/api/users',        userRouter)
 app.use('/api/authorize',    authorizeRouter)
 app.use('/api/authenticate', authenticateRouter)
 app.use('/api/reset',        passwordResetRouter)
+
+// (In development) Not used yet.
+app.use('/api/services',     serviceRouter)
 
 // Middleware that needs to be added after the routes are defined.
 app.use('/api/*', unknownEndpoint)
