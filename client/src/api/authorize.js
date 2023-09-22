@@ -21,8 +21,9 @@ export const config = object => {
   }
 }
 
-const setToken = (newToken) => {
-  token = `bearer ${newToken}`
+const setToken = newToken => {
+  if (newToken) token = `bearer ${newToken}`
+  else          token = null
 }
 
 // Authorize the user to use the service on the domain. Use this
@@ -37,6 +38,8 @@ const authorizeForService = async domain => {
 // Logout the user from the user-service.
 const logout = async () => {
   const response = await axios.get(`${url}/logout`, config())
+
+  setToken(null)
 
   return response.data
 }

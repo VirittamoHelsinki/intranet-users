@@ -11,7 +11,6 @@ import Reset from './pages/Reset'
 import Profile from './pages/Profile'
 
 import authorizeApi from './api/authorize'
-import userApi from './api/users'
 import commonApi from './api/common'
 import useStore from './store'
 import { portalUrl } from './config'
@@ -44,7 +43,6 @@ const Navigator = () => {
   // Run when the logout button is pressed.
   const logout = async () => {
     await authorizeApi.logout()
-    authorizeApi.setToken(null)
     const cookies = new Cookies()
     cookies.remove('usersToken')
     setUser(null)
