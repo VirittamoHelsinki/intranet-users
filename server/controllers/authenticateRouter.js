@@ -9,7 +9,8 @@ const authenticateRouter = require('express').Router()
 
 // Local imports.
 const User = require('../models/user')
-const { protocol, allowedDomains, domainKeys } = require('../config.js')
+const Service = require('../models/service')
+const { protocol } = require('../config.js')
 
 
 // Authenticate user without forwarding them to any service.
@@ -43,7 +44,6 @@ authenticateRouter.post('/', async (req, res, next) => {
   res.status(200).send({ token, ...User.format(user) })
 })
 
-
 // Authenticate user and authorize them to use a specific service.
 // Returns a key that a client can use to get a token from
 // the service defined in the domain parameter.
@@ -52,7 +52,9 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
     let { email, password } = req.body
     const domain = req.params.domain.toLowerCase()
 
-    if (!allowedDomains.includes(domain)) {
+    const service = await Service.findOne({ domain })
+
+    if (!service) {
       return res.status(401).json({ error: 'unauthorized domain' })
     }
 
@@ -82,16 +84,16 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.
-      { email, token, domain_key: domainKeys[domain] }
+      { email, token, domain_key: service.domainKey }
     )
 
-    // Get a one time use service_key that allows the redirected user to get,
+    // Get a one time use user_key that allows the redirected user to get,
     // their token from the service.
-    const { service_key } = response.data
+    const { user_key } = response.data
 
-    // token is used by the user service and the service_key is used by the
+    // token is used by the user service and the user_key is used by the
     // service on the domain.
-    res.status(200).send({ token, service_key, ...User.format(user) })
+    res.status(200).send({ token, user_key, ...User.format(user) })
 
     // Authorization is for the outside domain, token is for the user service.
 

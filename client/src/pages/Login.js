@@ -45,7 +45,7 @@ const Login = () => {
   const authorizeAndRedirectUserToService = async () => {
     const data = await authorizeApi.authorizeForService(domain)
     
-    window.location.href = `${protocol}://${domain}/?service_key=${data.service_key}`
+    window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`
   }
 
   if (domain && !allowedDomains.find(d => d === domain)) return (
@@ -99,7 +99,7 @@ const Login = () => {
         
       if (domain) {
         // If an external service was specified with the domain parameter.
-        window.location.href = `${protocol}://${domain}/?service_key=${authenticatedUser.service_key}`
+        window.location.href = `${protocol}://${domain}/?user_key=${authenticatedUser.user_key}`
      
       } else navigate('/')
 

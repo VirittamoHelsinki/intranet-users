@@ -2,10 +2,6 @@
 // Authentication and authorization is only allowed for systems in the
 // the database.
 
-// Status: (development in progress)
-
-const bcrypt = require('bcrypt')
-
 const serviceRouter = require('express').Router()
 
 // Local imports.
@@ -23,11 +19,12 @@ const userIsAdmin = (req, res, next) => {
     next()
 }
 
+// Get the allowed service domains.
 serviceRouter.get('/domains', async (req, res, next) => {
     try {
-        const domains = await Service.find({}).select('domain')
+        const domains = await Service.find({})
         
-        res.json(domains)
+        res.json(domains.map(service => service.domain))
     
     } catch (exception) { next(exception) }
 })
@@ -40,12 +37,12 @@ serviceRouter.all('*', requireAuthorization)
 serviceRouter.all('*', userIsAdmin)
 
 
-// Get formatted services.
+// Get all information about each service.
 serviceRouter.get('/', async (req, res, next) => {
     try {
         const services = await Service.find({})
         
-        res.json(services.map(Service.format))
+        res.json(services)
     
     } catch (exception) { next(exception) }
 })
@@ -59,14 +56,11 @@ serviceRouter.post('/', async (req, res, next) => {
         if (!name)      return res.status(400).json({ error: 'name is missing' })
         if (!domain)    return res.status(400).json({ error: 'domain is missing' })
         if (!domainKey) return res.status(400).json({ error: 'domainKey is missing' })
-    
-        const saltRounds = 12
-        const domainKeyHash = await bcrypt.hash(domainKey, saltRounds)
 
         const service = new Service({
             name,
             domain,
-            domainKeyHash
+            domainKey
         })
 
         const savedService = await service.save()
@@ -102,6 +96,19 @@ serviceRouter.put('/:id', async (req, res, next) => {
         if (!name && !domain && !domainKey) {
             return res.status(400).json({ error: 'no fields provided for editing.' })
         }
+
+        // update the service.
+        const updatedService = await Service.findByIdAndUpdate(id, {
+            name,
+            domain,
+            domainKey
+        }, { new: true })
+
+        if (!updatedService) {
+            return res.status(400).json({ error: 'service does not exist' })
+        }
+
+        res.json(updatedService)
     
     } catch (exception) { next(exception) }
 })

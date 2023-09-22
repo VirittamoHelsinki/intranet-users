@@ -38,18 +38,12 @@ app.get('/api', (req, res) => {
   res.send('<h1>Backend API starts here</h1> ')
 })
 
-app.get('/api/domains', (req, res) => {
-  res.json(allowedDomains)
-})
-
 // Add routers.
 app.use('/api/users',        userRouter)
+app.use('/api/services',     serviceRouter)
 app.use('/api/authorize',    authorizeRouter)
 app.use('/api/authenticate', authenticateRouter)
 app.use('/api/reset',        passwordResetRouter)
-
-// (In development) Not used yet.
-app.use('/api/services',     serviceRouter)
 
 // Middleware that needs to be added after the routes are defined.
 app.use('/api/*', unknownEndpoint)

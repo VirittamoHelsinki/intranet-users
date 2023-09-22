@@ -18,19 +18,6 @@ let mongoUrl = process.env.MONGODB_URI
 if      (environmentMode === 'test')       mongoUrl = process.env.TEST_MONGODB_URI
 else if (environmentMode === 'production') mongoUrl = process.env.PRODUCTION_MONGODB_URI
 
-// Domains that are allowed to use this service.
-const allowedDomains = process.env.ALLOWED_DOMAINS.split(',')
-
-// domain keys are used to authorize requests with each domain.
-// the app using the domain needs to know the key for its domain
-// so that requests can be authorized.
-const domainKeys = {}
-
-// Map the allowed domains to their keys.
-process.env.DOMAIN_KEYS.split(',').forEach((key, index) => {
-  domainKeys[allowedDomains[index]] = key
-})
-
 const protocol = environmentMode === 'production' ? 'https' : 'http'
 
 const secret = process.env.SECRET
@@ -43,8 +30,6 @@ module.exports = {
   emailPW,
   url,
   environmentMode,
-  allowedDomains,
-  domainKeys,
   protocol,
   secret
 }

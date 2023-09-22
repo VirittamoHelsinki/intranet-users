@@ -7,12 +7,19 @@ const serviceSchema = new mongoose.Schema({
         unique: true
     },
     domain: {
+        // Url of the service.
         type: String,
         required: true,
         lowercase: true,
         unique: true
     },
-    domainKeyHash: {
+    domainKey: {
+        // The users app identifies itself to the service by sending this key.
+        // The service must have this key saved into its environment variables.
+        // Each service has its own key so that if one services key is compromised,
+        // the other services are still safe from someone using the compromised key
+        // for pretending to be the users service.
+        // !! This key must never be sent to any client. Use only between servers. !!
         type: String,
         required: true
     }

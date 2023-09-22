@@ -16,7 +16,7 @@ const Service = require('../models/service')
 const {
   requireAuthorization, addTokenToBlacklist, getTokenFrom
 } = require('../middleware/authorize')
-const { protocol, allowedDomains, domainKeys } = require('../config.js')
+const { protocol } = require('../config.js')
 
 
 // From here on require valid authorization(token) on all routes.
@@ -46,7 +46,9 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
     const domain = req.params.domain.toLowerCase()
     const token = getTokenFrom(req)
 
-    if (!allowedDomains.includes(domain)) {
+    const service = await Service.findOne({ domain })
+
+    if (!service) {
       return res.status(401).json({ error: 'unauthorized domain' })
     }
 
@@ -59,16 +61,16 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
       {
         email: user.email,
         token,
-        domain_key: domainKeys[domain] }
+        domain_key: service.domainKey }
     )
 
-    // Get a one time use service_key that allows the redirected user to get,
+    // Get a one time use user_key that allows the redirected user to get,
     // their token from the service.
-    const { service_key } = response.data
+    const { user_key } = response.data
 
-    // token is used by the user service and the service_key is used by the
+    // token is used by the user service and the user_key is used by the
     // service on the domain.
-    res.status(200).send({ service_key, ...User.format(user) })
+    res.status(200).send({ user_key, ...User.format(user) })
 
     // Authorization is for the outside domain, token is for the user service.
 

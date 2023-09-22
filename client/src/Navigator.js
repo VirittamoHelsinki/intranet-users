@@ -30,7 +30,7 @@ const Navigator = () => {
   // Load the allowed domains from the server and save them to the state.
   const loadAllowedDomains = async () => {
     try {
-      const domains = await commonApi.getAll('/domains')
+      const domains = await commonApi.getAll('/services/domains')
       setAllowedDomains(domains)
     
     } catch(exception) { console.log('exception: ', exception) }
