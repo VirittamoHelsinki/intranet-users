@@ -1,6 +1,7 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
 import commonService from './common'
+import { config } from './authorize'
 
 import { apiUrl } from '../config'
 
@@ -10,21 +11,7 @@ axiosRetry(axios, {
 })
 
 const service = '/users'
-const url = apiUrl+service
-let token = null
-
-export const config = object => {
-  if (!object) return { headers: { 'Authorization': token } }
-
-  return {
-    headers: { 'Authorization': token },
-    data: object
-  }
-}
-
-const setToken = (newToken) => {
-  token = `bearer ${newToken}`
-}
+const url = apiUrl + service
 
 const create = async object => commonService.post(object, service)
 
@@ -34,4 +21,4 @@ const get = async () => {
   return response.data
 }
 
-export default { setToken, create, get }
+export default { create, get }

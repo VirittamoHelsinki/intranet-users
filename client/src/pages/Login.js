@@ -85,7 +85,7 @@ const Login = () => {
     } catch (exception) { console.log('exception: ', exception) }
       
     if (authenticatedUser) {
-      userApi.setToken(authenticatedUser.token)
+      authorizeApi.setToken(authenticatedUser.token)
 
       const cookies = new Cookies()
 

@@ -5,6 +5,7 @@ import Cookies from 'universal-cookie'
 
 // file imports
 import userApi         from '../api/users'
+import authorizeApi    from '../api/authorize'
 import authenticateApi from '../api/authenticate'
 import useStore        from '../store'
 
@@ -83,7 +84,7 @@ const Register = () => {
       const authenticatedUser = await authenticateApi.authenticate(credentials)
       
       if (authenticatedUser) {
-        userApi.setToken(authenticatedUser.token)
+        authorizeApi.setToken(authenticatedUser.token)
         const cookies = new Cookies()
         
         cookies.set('usersToken', authenticatedUser.token, {

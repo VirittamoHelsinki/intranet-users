@@ -1,6 +1,5 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
-import { config } from './users'
 
 import { apiUrl } from '../config'
 
@@ -10,6 +9,21 @@ axiosRetry(axios, {
 })
 
 const url = `${apiUrl}/authorize`
+
+let token = null
+
+export const config = object => {
+  if (!object) return { headers: { 'Authorization': token } }
+
+  return {
+    headers: { 'Authorization': token },
+    data: object
+  }
+}
+
+const setToken = (newToken) => {
+  token = `bearer ${newToken}`
+}
 
 // Authorize the user to use the service on the domain. Use this
 // function when the user is already logged in to the user-service
@@ -27,4 +41,4 @@ const logout = async () => {
   return response.data
 }
 
-export default { authorizeForService, logout }
+export default { setToken, authorizeForService, logout }

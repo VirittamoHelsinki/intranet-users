@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import Cookies from 'universal-cookie'
 
+import authorizeApi from './api/authorize'
 import userApi from './api/users'
 import useStore from './store'
 
@@ -18,14 +19,14 @@ const CookieTracker = () => {
     if (usersToken) {
 
       // Initialize the user state with the token from the cookie.
-      userApi.setToken(usersToken)
+      authorizeApi.setToken(usersToken)
 
       try {
         // Load user information from the server.
         setUser(await userApi.get())
       
       } catch (error) {
-        // If the token is invalid, remove it from the cookie.
+        // If the token is invalid, remove the token cookie.
         cookies.remove('usersToken')
       }
     }

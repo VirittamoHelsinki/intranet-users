@@ -1,6 +1,6 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
-import { config } from './users'
+import { config } from './authorize'
 import { apiUrl } from '../config'
 const url = apiUrl
 

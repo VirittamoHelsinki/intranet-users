@@ -44,7 +44,7 @@ const Navigator = () => {
   // Run when the logout button is pressed.
   const logout = async () => {
     await authorizeApi.logout()
-    userApi.setToken(null)
+    authorizeApi.setToken(null)
     const cookies = new Cookies()
     cookies.remove('usersToken')
     setUser(null)
