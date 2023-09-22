@@ -9,7 +9,6 @@ import '../styles/loginComponents.css'
 
 import authenticateApi from '../api/authenticate'
 import authorizeApi    from '../api/authorize'
-import userApi         from '../api/users'
 
 import useStore from '../store'
 

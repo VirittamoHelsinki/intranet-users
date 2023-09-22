@@ -9,6 +9,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Reset from './pages/Reset'
 import Profile from './pages/Profile'
+import Services from './pages/Services'
 
 import authorizeApi from './api/authorize'
 import commonApi from './api/common'
@@ -48,6 +49,18 @@ const Navigator = () => {
     setUser(null)
   }
 
+  const renderAdminPageLink = () => {
+    if (!user || !user.admin) return null
+
+    return (
+      <Nav.Link as="span">
+        <Link to="/services" className="navLinkStyle">
+          Hallintapaneeli
+        </Link>
+      </Nav.Link>
+    )
+  }
+
   const renderNavbar = () => {
     if (user) return (
       <Navbar  fixed="top" bg="navbar-style" variant="dark" expand="sm"
@@ -72,6 +85,7 @@ const Navigator = () => {
                   Käyttäjän tiedot
                 </Link>
               </Nav.Link>
+              {renderAdminPageLink()}
             </Nav>
           </Navbar.Collapse>
       </Navbar>
@@ -116,6 +130,7 @@ const Navigator = () => {
             <Route path="/register/:domain" element={ <Register />} />
             <Route path="/resetpassword"    element={ <Reset />} />
             <Route path="/profile"          element={ <Profile />} />
+            <Route path="/services"         element={ <Services />} />
           </Routes>
 
         </Router>
