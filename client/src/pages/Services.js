@@ -1,6 +1,6 @@
 // node imports
-import { useState, useEffect } from 'react'
-import { useNavigate, } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import servicesApi from '../api/services'
 import useStore from '../store'
@@ -13,12 +13,14 @@ const Services = () => {
         setServices
     } = useStore()
 
+    const navigate = useNavigate()
+
     const getServices = async () => {
         if (user && user.admin) {
             try {
                 let serviceEntries = await servicesApi.getAll()
-                console.log('serviceEntries: ', serviceEntries)
-                serviceEntries.forEach(s => s.showDomainKey = false)
+
+                serviceEntries.forEach(s => s.showServiceKey = false)
                 
                 setServices(serviceEntries)
         
@@ -38,39 +40,64 @@ const Services = () => {
         </div>
     )
 
-    const showOrHideDomainKey = service => {
-        service.showDomainKey = !service.showDomainKey
+    const showOrHideServiceKey = service => {
+        service.showServiceKey = !service.showServiceKey
 
         setServices(services)
     }
 
-    const domainKeyElement = service => {
-        if (service.showDomainKey) return (
+    const serviceKeyElement = service => {
+        if (service.showServiceKey) return (
             <span>
-                domain avain: {service.domainKey}
-                <button onClick={() => showOrHideDomainKey(service)}>
+                palvelun avain: {service.serviceKey}
+                <button onClick={() => showOrHideServiceKey(service)}>
                     piilota
                 </button>
             </span>
         )
 
         return (
-            <button onClick={() => showOrHideDomainKey(service)}>
-                näytä domain avain
+            <button onClick={() => showOrHideServiceKey(service)}>
+                näytä palvelun avain
             </button>
+        )
+    }
+
+    const renderService = service => {
+        return (
+            <div
+                key={service._id}
+                style={{
+                    border: '1px solid black',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    background: 'lightgrey',
+                }}
+            >
+                <div>nimi: {service.name}</div>
+                <div>domain: {service.domain}</div>
+                {serviceKeyElement(service)}
+                <button onClick={() => navigate(`/services/${service._id}`)}>
+                    muokkaa
+                </button>
+                <button onClick={() => {
+                    servicesApi
+                        .remove(service._id)
+                        .then(() => {
+                            setServices(services.filter(s => s._id !== service._id))
+                        })
+                        .catch(error => console.log('error: ', error))
+                }}>
+                    poista
+                </button>
+            </div>
         )
     }
 
     const renderServices = () => {
         if (!services || services.length === 0) return <div>0 Palvelua</div>
 
-        return services.map(service => 
-            <div key={service.id}>
-                <div>nimi: {service.name}</div>
-                <div>domain: {service.domain}</div>
-                {domainKeyElement(service)}
-            </div>
-        )
+        return services.map(service => renderService(service))
     }
 
     return (
@@ -78,9 +105,14 @@ const Services = () => {
             <br/><br/>
             <h4>Intranet Palveluiden Hallinta</h4>
             <div>
-                Tällä sivulla järjestelmän valvoja voi lisätä uusia palveluita
-                autorisoitujen palveluiden joukkoon, ja säätää näiden käyttöoikeuksia.
+                Tällä sivulla järjestelmän valvoja voi lisätä, poistaa ja muokata järjestelmään
+                kuuluvia palveluita ja säätää näiden käyttöoikeuksia.
             </div>
+            <br/>
+            <button onClick={() => navigate('/services/new')}>
+                lisää uusi palvelu
+            </button>
+            <br/>
             <br/>
             {renderServices()}
             <br/>

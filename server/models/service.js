@@ -13,7 +13,7 @@ const serviceSchema = new mongoose.Schema({
         lowercase: true,
         unique: true
     },
-    domainKey: {
+    serviceKey: {
         // The users app identifies itself to the service by sending this key.
         // The service must have this key saved into its environment variables.
         // Each service has its own key so that if one services key is compromised,
@@ -25,7 +25,7 @@ const serviceSchema = new mongoose.Schema({
     }
 })
 
-// Return service information without the domainKeyHash.
+// Return service information without the serviceKey.
 serviceSchema.statics.format = ({
     _id, name, domain
 }) => ({

@@ -61,7 +61,7 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
       {
         email: user.email,
         token,
-        domain_key: service.domainKey }
+        service_key: service.serviceKey }
     )
 
     // Get a one time use user_key that allows the redirected user to get,

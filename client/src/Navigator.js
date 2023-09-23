@@ -10,6 +10,7 @@ import Register from './pages/Register'
 import Reset from './pages/Reset'
 import Profile from './pages/Profile'
 import Services from './pages/Services'
+import ServiceForm from './pages/ServiceForm'
 
 import authorizeApi from './api/authorize'
 import commonApi from './api/common'
@@ -126,11 +127,19 @@ const Navigator = () => {
             <Route path="/:domain"          element={ <Login />} />
             <Route path="/login"            element={ <Login />} />
             <Route path="/login/:domain"    element={ <Login />} />
+            
             <Route path="/register"         element={ <Register />} />
             <Route path="/register/:domain" element={ <Register />} />
+            
             <Route path="/resetpassword"    element={ <Reset />} />
+            
             <Route path="/profile"          element={ <Profile />} />
+            
             <Route path="/services"         element={ <Services />} />
+            <Route path="/services/:id"     element={ <ServiceForm />} />
+            <Route path="/services/add"     element={ <ServiceForm />} />
+
+
           </Routes>
 
         </Router>

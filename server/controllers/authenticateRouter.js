@@ -84,7 +84,7 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.
-      { email, token, domain_key: service.domainKey }
+      { email, token, service_key: service.serviceKey }
     )
 
     // Get a one time use user_key that allows the redirected user to get,
