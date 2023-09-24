@@ -109,9 +109,19 @@ const requireAuthorization = async (req, res, next) => {
   } catch (error) { processTokenErrors(error, req, res, next) }
 }
 
+// Middleware that ensures that the user making the request
+// is an admin. Must be applied after the requireAuthorization
+// middleware. (because res.locals.user must be defined)
+const userIsAdmin = (req, res, next) => {
+  if (!res.locals.user.admin) {
+      return res.status(401).json({ error: 'unauthorized user' })
+  }
+  next()
+}
 
 module.exports = {
-  requireAuthorization,
   addTokenToBlacklist,
-  getTokenFrom
+  getTokenFrom,
+  requireAuthorization,
+  userIsAdmin
 }

@@ -12,8 +12,15 @@ const url = `${apiUrl}/authorize`
 
 let token = null
 
+// Makes sure that the token is sent if it has been defined.
+// Also sends the object as data if it has been defined as a
+// parameter.
 export const config = object => {
-  if (!object) return { headers: { 'Authorization': token } }
+  if (!token && !object) return {}
+  
+  if (token && !object) return { headers: { 'Authorization': token } }
+  
+  if (!token && object) return { data: object }
 
   return {
     headers: { 'Authorization': token },

@@ -46,7 +46,7 @@ userSchema.methods.generateJWT = function generateJWT() {
     admin: this.admin,
     access: this.access
   }, secret,
-  { expiresIn: '3d' })
+  { expiresIn: '2d' })
 }
 
 userSchema.statics.format = user => {

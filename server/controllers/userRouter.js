@@ -1,7 +1,8 @@
 const userRouter = require('express').Router()
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
-const { requireAuthorization } = require('../middleware/authorize')
+const {
+  requireAuthorization, userIsAdmin } = require('../middleware/authorize')
 
 const virittamoEmail = email => {
   if (email.endsWith('@edu.hel.fi')) return true
@@ -66,6 +67,66 @@ userRouter.get('/', async (req, res, next) => {
     })
 
     res.json(User.format(user))
+
+  } catch (exception) { next(exception) }
+})
+
+
+// From here on require that the user is an admin on all routes.
+userRouter.all('*', userIsAdmin)
+
+
+// Get all users.
+userRouter.get('/all', async (req, res, next) => {
+  try {
+    const users = await User.find({})
+
+    res.json(users.map(User.format))
+
+  } catch (exception) { next(exception) }
+})
+
+
+// Delete a user.
+userRouter.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const user = await User.findById(id)
+
+    if (!user) return res.status(401).json({
+      error: `Cannot find user with id: ${id}`
+    })
+
+    await user.remove()
+
+    res.status(204).end()
+
+  } catch (exception) { next(exception) }
+})
+
+
+// An admin user can update any users admin and access rights.
+userRouter.put('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const { admin, access } = req.body
+    
+    if (!admin && !access) {
+      return res.status(400).json({ error: 'No valid fields to update.'})
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { admin, access },
+      { new: true }
+    )
+
+    if (!updatedUser) {
+      return res.status(400).json({ error: 'User does not exist.' })
+    }
+
+    res.json(User.format(updatedUser))
 
   } catch (exception) { next(exception) }
 })

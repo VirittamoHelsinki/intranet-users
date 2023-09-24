@@ -14,6 +14,8 @@ const service = '/users'
 const url = apiUrl + service
 
 const create = async object => commonService.post(object, service)
+const update = async (id, object) => commonService.put(id, object, service)
+const remove = async id => commonService.del(id, service)
 
 const get = async () => {
   const response = await axios.get(url, config())
@@ -21,4 +23,10 @@ const get = async () => {
   return response.data
 }
 
-export default { create, get }
+const getAll = async () => {
+  const response = await axios.get(`${url}/all`, config())
+
+  return response.data
+}
+
+export default { create, update, remove, get, getAll }

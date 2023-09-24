@@ -36,7 +36,7 @@ const Services = () => {
     if (!user || !user.admin) return (
         <div>
             <br/><br/>
-            <h4>Vain järjestelmän valvojilla on oikeus käyttää tätä sivua.</h4>
+            <h4>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h4>
         </div>
     )
 
@@ -101,11 +101,14 @@ const Services = () => {
     }
 
     return (
-        <div>
-            <br/><br/>
-            <h4>Intranet Palveluiden Hallinta</h4>
+        <div style={{
+            margin: '20px',
+            padding: '20px',
+            maxWidth: '1000px'
+        }}>
+            <h4 style={{textAlign: 'center'}}>Intranetin Palveluiden Hallinta</h4>
             <div>
-                Tällä sivulla järjestelmän valvoja voi lisätä, poistaa ja muokata järjestelmään
+                Tällä sivulla järjestelmänvalvoja voi lisätä, poistaa ja muokata järjestelmään
                 kuuluvia palveluita ja säätää näiden käyttöoikeuksia.
             </div>
             <br/>

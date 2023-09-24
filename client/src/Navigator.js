@@ -11,6 +11,7 @@ import Reset from './pages/Reset'
 import Profile from './pages/Profile'
 import Services from './pages/Services'
 import ServiceForm from './pages/ServiceForm'
+import Users from './pages/Users'
 
 import authorizeApi from './api/authorize'
 import commonApi from './api/common'
@@ -50,17 +51,24 @@ const Navigator = () => {
     setUser(null)
   }
 
-  const renderAdminPageLink = () => {
+  const renderAdminPageLinks = () => {
     if (!user || !user.admin) return null
 
-    return (
+    return [
       <Nav.Link as="span">
         <Link to="/services" className="navLinkStyle">
-          Hallintapaneeli
+          Palveluiden hallinta
         </Link>
-      </Nav.Link>
-    )
+      </Nav.Link>,
+      <Nav.Link as="span">
+        <Link to="/users" className="navLinkStyle">
+          Käyttöoikeuksien hallinta
+        </Link>
+    </Nav.Link>
+    ]
   }
+
+  
 
   const renderNavbar = () => {
     if (user) return (
@@ -86,7 +94,7 @@ const Navigator = () => {
                   Käyttäjän tiedot
                 </Link>
               </Nav.Link>
-              {renderAdminPageLink()}
+              {renderAdminPageLinks()}
             </Nav>
           </Navbar.Collapse>
       </Navbar>
@@ -117,10 +125,13 @@ const Navigator = () => {
   }
 
   return (
-      <div >
+      <div>
         <Router>
 
           {renderNavbar()}
+
+          {/* This div is used to push the page content below the navbar. */}
+          <div style={{marginTop: '70px'}}/>
 
           <Routes>
             <Route path="/"                 element={ <Login />} />
@@ -139,6 +150,7 @@ const Navigator = () => {
             <Route path="/services/:id"     element={ <ServiceForm />} />
             <Route path="/services/add"     element={ <ServiceForm />} />
 
+            <Route path="/users"            element={ <Users />} />
 
           </Routes>
 

@@ -6,11 +6,13 @@ const useStore = create(set => ({
     user: null,
     allowedDomains: [],
     services: [],
+    users: [],
 
     // actions
     setUser: user => set({ user }),
     setAllowedDomains: allowedDomains => set({ allowedDomains }),
-    setServices: services => set({ services })
+    setServices: services => set({ services }),
+    setUsers: users => set({ users })
 }))
 
 export default useStore

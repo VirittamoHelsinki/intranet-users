@@ -9,15 +9,7 @@ const User = require('../models/user')
 const Service = require('../models/service')
 
 const { protocol } = require('../config.js')
-const { requireAuthorization } = require('../middleware/authorize')
-
-// Middleware that checks if the user making the request is an admin.
-const userIsAdmin = (req, res, next) => {
-    if (!res.locals.user.admin) {
-        return res.status(401).json({ error: 'unauthorized user' })
-    }
-    next()
-}
+const { requireAuthorization, userIsAdmin } = require('../middleware/authorize')
 
 // Get the allowed service domains.
 serviceRouter.get('/domains', async (req, res, next) => {
