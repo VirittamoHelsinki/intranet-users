@@ -46,16 +46,16 @@ authenticateRouter.post('/', async (req, res, next) => {
 
 // Authenticate user and authorize them to use a specific service.
 // Returns a key that a client can use to get a token from
-// the service defined in the domain parameter.
-authenticateRouter.post('/:domain', async (req, res, next) => {
+// the service defined in the url parameter.
+authenticateRouter.post('/:url', async (req, res, next) => {
   try {
     let { email, password } = req.body
-    const domain = req.params.domain.toLowerCase()
+    const url = req.params.url.toLowerCase()
 
-    const service = await Service.findOne({ domain })
+    const service = await Service.findOne({ url })
 
     if (!service) {
-      return res.status(401).json({ error: 'unauthorized domain' })
+      return res.status(401).json({ error: 'unauthorized url' })
     }
 
     if (!email)    return res.status(400).json({ error: 'email is missing' })

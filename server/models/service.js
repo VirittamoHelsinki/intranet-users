@@ -6,7 +6,7 @@ const serviceSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    domain: {
+    url: {
         // Url of the service.
         type: String,
         required: true,
@@ -27,11 +27,11 @@ const serviceSchema = new mongoose.Schema({
 
 // Return service information without the serviceKey.
 serviceSchema.statics.format = ({
-    _id, name, domain
+    _id, name, url
 }) => ({
     _id,
     name,
-    domain
+    url
 })
 
 const Service = mongoose.model('Service', serviceSchema)
