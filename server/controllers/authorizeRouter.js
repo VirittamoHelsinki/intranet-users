@@ -111,7 +111,7 @@ authorizeRouter.get('/service/:name/:level', async (req, res, next) => {
       })
     }
 
-    res.json({ authorization: true })
+    res.json(User.format(user))
 
   } catch (exception) { next(exception) }
 })

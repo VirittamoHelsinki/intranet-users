@@ -9,7 +9,7 @@ import authorizeApi    from '../api/authorize'
 import authenticateApi from '../api/authenticate'
 import useStore        from '../store'
 
-import '../styles/loginComponents.css'
+import '../styles/styles.css'
 
 const Register = () => {
   const {

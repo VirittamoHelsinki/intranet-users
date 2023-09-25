@@ -5,7 +5,7 @@ import Cookies from 'universal-cookie'
 
 // file imports
 import { protocol } from '../config'
-import '../styles/loginComponents.css'
+import '../styles/styles.css'
 
 import authenticateApi from '../api/authenticate'
 import authorizeApi    from '../api/authorize'
@@ -26,10 +26,8 @@ const Login = () => {
 
   const [searchParams] = useSearchParams()
 
+    // url/?domain=example.com
   const domain = searchParams.get("domain")
-
-  // /login/?domain=test
-  //console.log('domain url parameter: ', domain)
 
   useEffect(() => {
     if (user && domain && allowedDomains.find(d => d === domain)) {

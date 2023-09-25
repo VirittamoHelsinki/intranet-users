@@ -98,7 +98,7 @@ userRouter.delete('/:id', async (req, res, next) => {
       error: `Cannot find user with id: ${id}`
     })
 
-    await user.remove()
+    await User.findByIdAndRemove(id)
 
     res.status(204).end()
 
@@ -110,11 +110,14 @@ userRouter.delete('/:id', async (req, res, next) => {
 userRouter.put('/:id', async (req, res, next) => {
   try {
     const id = req.params.id
-    const { admin, access } = req.body
+    let { admin, access } = req.body
     
     if (!admin && !access) {
       return res.status(400).json({ error: 'No valid fields to update.'})
     }
+
+    // If an access level is marked 0, remove it from the list.
+    if (access) access = access.filter(a => a.level != 0)
 
     const updatedUser = await User.findByIdAndUpdate(
       id,

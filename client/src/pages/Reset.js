@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import resetApi from '../api/reset'
 import useStore from '../store'
 
-import '../styles/loginComponents.css'
+import '../styles/styles.css'
 
 const Reset = () => {
   const [email, setEmail] = useState('')
