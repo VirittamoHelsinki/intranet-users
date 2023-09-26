@@ -14,7 +14,7 @@ import ServiceForm from './pages/ServiceForm'
 import Users from './pages/Users'
 
 import authorizeApi from './api/authorize'
-import commonApi from './api/common'
+import serviceApi from './api/services'
 import useStore from './store'
 import { portalUrl } from './config'
 
@@ -26,20 +26,21 @@ const Navigator = () => {
   const {
     user,
     setUser,
-    setAllowedDomains
+    setPublicServices,
   } = useStore()
 
-  // Load the allowed domains from the server and save them to the state.
-  const loadAllowedDomains = async () => {
+  // Load public information about the services from the server and
+  // save it to the state.
+  const loadServices = async () => {
     try {
-      const domains = await commonApi.getAll('/services/domains')
-      setAllowedDomains(domains)
+      const publicServices = await serviceApi.getAllPublic()
+      setPublicServices(publicServices)
     
     } catch(exception) { console.log('exception: ', exception) }
   }
 
   useEffect(() => {
-    loadAllowedDomains()
+    loadServices()
   }, [])
 
 

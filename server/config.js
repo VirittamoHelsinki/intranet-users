@@ -18,8 +18,6 @@ let mongoUrl = process.env.MONGODB_URI
 if      (environmentMode === 'test')       mongoUrl = process.env.TEST_MONGODB_URI
 else if (environmentMode === 'production') mongoUrl = process.env.PRODUCTION_MONGODB_URI
 
-const protocol = environmentMode === 'production' ? 'https' : 'http'
-
 const secret = process.env.SECRET
 
 module.exports = {
@@ -30,6 +28,5 @@ module.exports = {
   emailPW,
   url,
   environmentMode,
-  protocol,
   secret
 }

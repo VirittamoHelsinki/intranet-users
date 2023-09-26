@@ -11,16 +11,16 @@ const Service = require('../models/service')
 const { protocol } = require('../config.js')
 const { requireAuthorization, userIsAdmin } = require('../middleware/authorize')
 
-// Get the allowed service domains.
-serviceRouter.get('/domains', async (req, res, next) => {
+
+// Get all public information about the services.
+serviceRouter.get('/public', async (req, res, next) => {
     try {
         const domains = await Service.find({})
         
-        res.json(domains.map(service => service.domain))
+        res.json(domains.map(Service.format))
     
     } catch (exception) { next(exception) }
 })
-
 
 // From here on require valid authorization(token) on all routes.
 serviceRouter.all('*', requireAuthorization)
@@ -43,15 +43,17 @@ serviceRouter.get('/', async (req, res, next) => {
 // An admin user can add a new domain to the system.
 serviceRouter.post('/', async (req, res, next) => {
     try {
-        const { name, domain, serviceKey } = req.body
+        const { name, domain, protocol, serviceKey } = req.body
 
         if (!name)      return res.status(400).json({ error: 'name is missing' })
         if (!domain)    return res.status(400).json({ error: 'domain is missing' })
+        if (!protocol)  return res.status(400).json({ error: 'protocol is missing' })
         if (!serviceKey) return res.status(400).json({ error: 'serviceKey is missing' })
 
         const service = new Service({
             name,
             domain,
+            protocol,
             serviceKey
         })
 
@@ -83,9 +85,9 @@ serviceRouter.delete('/:id', async (req, res, next) => {
 serviceRouter.put('/:id', async (req, res, next) => {
     try {
         const { id } = req.params
-        const { name, domain, serviceKey } = req.body
+        const { name, domain, protocol, serviceKey } = req.body
 
-        if (!name && !domain && !serviceKey) {
+        if (!name && !domain && !protocol && !serviceKey) {
             return res.status(400).json({ error: 'no fields provided for editing.' })
         }
 
@@ -93,6 +95,7 @@ serviceRouter.put('/:id', async (req, res, next) => {
         const updatedService = await Service.findByIdAndUpdate(id, {
             name,
             domain,
+            protocol,
             serviceKey
         }, { new: true })
 
