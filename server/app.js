@@ -5,7 +5,6 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 
 // local imports
-const { environmentMode, apiUrl, allowedDomains } = require('./config')
 const middlewares = require('./middleware/middleware')
 const logger = require('./middleware/logger')
 const { requestLogger, unknownEndpoint, errorHandler
