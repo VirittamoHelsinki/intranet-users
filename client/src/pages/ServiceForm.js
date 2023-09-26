@@ -3,6 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 
 import servicesApi from '../api/services'
 import useStore from '../store'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { Button } from '../components/ui/button'
+import { Textarea } from '../components/ui/textarea'
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
 
 // A form page for adding and editing services.
 const ServiceForm = () => {
@@ -11,22 +16,22 @@ const ServiceForm = () => {
         services,
         setServices
     } = useStore()
-    
-    const [name,       setName]       = useState('')
-    const [domain,     setDomain]     = useState('')
+
+    const [name, setName] = useState('')
+    const [domain, setDomain] = useState('')
     const [serviceKey, setServiceKey] = useState('')
 
     const [editing, setEditing] = useState(false)
 
     const navigate = useNavigate()
     const { id } = useParams()
-    
+
     useEffect(() => {
         if (editing) {
             const service = services.find(s => s._id === id)
-            
+
             if (!service) return
-            
+
             setName(service.name)
             setDomain(service.domain)
             setServiceKey(service.serviceKey)
@@ -39,7 +44,7 @@ const ServiceForm = () => {
 
     if (!user || !user.admin) return (
         <div>
-            <br/><br/>
+            <br /><br />
             <h4>Vain järjestelmän valvojilla on oikeus käyttää tätä sivua.</h4>
         </div>
     )
@@ -72,14 +77,14 @@ const ServiceForm = () => {
     }
 
     return (
-        <div>
-            <h3>
+        <div className='flex flex-col  items-center'>
+            <h2>
                 {id ? 'Muokkaa palvelua' : 'Luo uusi palvelu'}
-            </h3>
-            <form onSubmit={onSubmit}>
+            </h2>
+            <form onSubmit={onSubmit} className='flex flex-col gap-3 max-w-md'>
                 <div>
-                    <label htmlFor="name">Palvelun nimi: </label>
-                    <input
+                    <Label htmlFor="name">Palvelun nimi: </Label>
+                    <Input
                         type="text"
                         id="name"
                         value={name}
@@ -87,8 +92,8 @@ const ServiceForm = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="domain">Palvelun domain: </label>
-                    <input
+                    <Label htmlFor="domain">Palvelun domain: </Label>
+                    <Input
                         type="text"
                         id="domain"
                         value={domain}
@@ -96,9 +101,9 @@ const ServiceForm = () => {
                     />
                 </div>
                 <div>
-                    <div htmlFor="serviceKey">Palvelun avain: </div>
-                    
-                    <textarea
+                    <Label htmlFor="serviceKey">Palvelun avain: </Label>
+
+                    <Textarea
                         id="serviceKey"
                         rows="4"
                         cols="50"
@@ -106,9 +111,17 @@ const ServiceForm = () => {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
-                <div>
-                    <button type="submit">Tallenna</button>
-                </div>
+                <RadioGroup defaultValue="comfortable">
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="default" id="r1" />
+                        <Label htmlFor="r1">http</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="comfortable" id="r2" />
+                        <Label htmlFor="r2">https</Label>
+                    </div>
+                </RadioGroup>
+                <Button type="submit">Tallenna</Button>
             </form>
         </div>
     )

@@ -5,7 +5,6 @@ import Cookies from 'universal-cookie'
 
 // file imports
 import { protocol } from '../config'
-import '../styles/styles.css'
 
 import authenticateApi from '../api/authenticate'
 import authorizeApi    from '../api/authorize'
@@ -18,7 +17,7 @@ const Login = () => {
     allowedDomains,
     setUser
   } = useStore()
-  
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -31,7 +30,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user && domain && allowedDomains.find(d => d === domain)) {
-      
+
       // If the user is already logged in and the domain parameter is specified,
       // redirect the user to the external service with the service key.
       authorizeAndRedirectUserToService()
@@ -41,7 +40,7 @@ const Login = () => {
 
   const authorizeAndRedirectUserToService = async () => {
     const data = await authorizeApi.authorizeForService(domain)
-    
+
     window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`
   }
 
@@ -70,7 +69,7 @@ const Login = () => {
     }
 
     let authenticatedUser = null
-    
+
     try {
       if (domain) {
         // If an external service was specified with the domain parameter.
@@ -78,9 +77,9 @@ const Login = () => {
       } else {
         authenticatedUser = await authenticateApi.authenticate(credentials)
       }
-    
+
     } catch (exception) { console.log('exception: ', exception) }
-      
+
     if (authenticatedUser) {
       authorizeApi.setToken(authenticatedUser.token)
 
@@ -93,11 +92,11 @@ const Login = () => {
       })
 
       setUser(authenticatedUser)
-        
+
       if (domain) {
         // If an external service was specified with the domain parameter.
         window.location.href = `${protocol}://${domain}/?user_key=${authenticatedUser.user_key}`
-     
+
       } else navigate('/')
 
     } else alert("Failed to login. Wrong email or password?")

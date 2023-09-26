@@ -9,8 +9,6 @@ import authorizeApi    from '../api/authorize'
 import authenticateApi from '../api/authenticate'
 import useStore        from '../store'
 
-import '../styles/styles.css'
-
 const Register = () => {
   const {
     user,
@@ -82,11 +80,11 @@ const Register = () => {
       await userApi.create(credentials)
 
       const authenticatedUser = await authenticateApi.authenticate(credentials)
-      
+
       if (authenticatedUser) {
         authorizeApi.setToken(authenticatedUser.token)
         const cookies = new Cookies()
-        
+
         cookies.set('usersToken', authenticatedUser.token, {
           // Cookie expires in 60 days.
           expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 60),
@@ -94,9 +92,9 @@ const Register = () => {
         })
 
         setUser(authenticatedUser)
-      
+
         navigate('/')
-     
+
       } else alert("Failed to login")
 
     } catch (exception) {
@@ -104,7 +102,7 @@ const Register = () => {
     }
 
   }
-  
+
   return (
     <div className="baseContainer" >
     <br/>
