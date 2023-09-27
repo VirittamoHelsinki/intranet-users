@@ -16,7 +16,6 @@ const Service = require('../models/service')
 const {
   requireAuthorization, addTokenToBlacklist, getTokenFrom
 } = require('../middleware/authorize')
-const { protocol } = require('../config.js')
 
 
 // From here on require valid authorization(token) on all routes.
@@ -47,21 +46,22 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
     const token = getTokenFrom(req)
 
     const service = await Service.findOne({ domain })
-
+    
     if (!service) {
       return res.status(401).json({ error: 'unauthorized domain' })
     }
 
     // Confirm to the service that the user has been authenticated.
     const response = await axios.post(
-      `${protocol}://${domain}/api/authorize`,
+      `${service.protocol}://${domain}/api/authorize`,
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.
       {
         email: user.email,
         token,
-        service_key: service.serviceKey }
+        service_key: service.serviceKey
+      }
     )
 
     // Get a one time use user_key that allows the redirected user to get,

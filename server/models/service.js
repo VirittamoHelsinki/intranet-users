@@ -13,6 +13,12 @@ const serviceSchema = new mongoose.Schema({
         lowercase: true,
         unique: true
     },
+    protocol: {
+        // The protocol used to connect to the service.
+        type: String,
+        required: true,
+        enum: ['http', 'https']
+    },
     serviceKey: {
         // The users app identifies itself to the service by sending this key.
         // The service must have this key saved into its environment variables.
@@ -27,11 +33,12 @@ const serviceSchema = new mongoose.Schema({
 
 // Return service information without the serviceKey.
 serviceSchema.statics.format = ({
-    _id, name, domain
+    _id, name, domain, protocol
 }) => ({
     _id,
     name,
-    domain
+    domain,
+    protocol
 })
 
 const Service = mongoose.model('Service', serviceSchema)

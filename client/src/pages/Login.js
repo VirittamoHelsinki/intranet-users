@@ -3,9 +3,6 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Cookies from 'universal-cookie'
 
-// file imports
-import { protocol } from '../config'
-
 import authenticateApi from '../api/authenticate'
 import authorizeApi    from '../api/authorize'
 
@@ -14,7 +11,7 @@ import useStore from '../store'
 const Login = () => {
   const {
     user,
-    allowedDomains,
+    publicServices,
     setUser
   } = useStore()
 
@@ -29,22 +26,28 @@ const Login = () => {
   const domain = searchParams.get("domain")
 
   useEffect(() => {
-    if (user && domain && allowedDomains.find(d => d === domain)) {
+
+    if (user && domain && publicServices.find(s => s.domain === domain)) {
 
       // If the user is already logged in and the domain parameter is specified,
       // redirect the user to the external service with the service key.
       authorizeAndRedirectUserToService()
     }
 
-  }, [ allowedDomains.length, user ])
+  }, [ publicServices.length, user ])
 
   const authorizeAndRedirectUserToService = async () => {
     const data = await authorizeApi.authorizeForService(domain)
+    const service = publicServices.find(s => s.domain === domain)
+
+    if (!service) return console.log('service not found for domain: ', domain)
+
+    const protocol = service.protocol
 
     window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`
   }
 
-  if (domain && !allowedDomains.find(d => d === domain)) return (
+  if (domain && !publicServices.find(s => s.domain === domain)) return (
     <div>
       <br/><br/>
       <h4>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</h4>
@@ -95,6 +98,13 @@ const Login = () => {
 
       if (domain) {
         // If an external service was specified with the domain parameter.
+
+        const service = publicServices.find(s => s.domain === domain)
+
+        if (!service) return console.log('service not found for domain: ', domain)
+
+        const protocol = service.protocol
+
         window.location.href = `${protocol}://${domain}/?user_key=${authenticatedUser.user_key}`
 
       } else navigate('/')

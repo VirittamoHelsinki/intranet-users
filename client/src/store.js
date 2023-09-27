@@ -4,13 +4,18 @@ import { create } from 'zustand'
 const useStore = create(set => ({
     // initial state variables
     user: null,
-    allowedDomains: [],
+
+    // Services here do not contain serviceKey
+    publicServices: [],
+
+    // Services here contain the serviceKey
     services: [],
+    
     users: [],
 
     // actions
     setUser: user => set({ user }),
-    setAllowedDomains: allowedDomains => set({ allowedDomains }),
+    setPublicServices: publicServices => set({ publicServices }),
     setServices: services => set({ services }),
     setUsers: users => set({ users })
 }))

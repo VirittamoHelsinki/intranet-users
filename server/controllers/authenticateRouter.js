@@ -10,8 +10,6 @@ const authenticateRouter = require('express').Router()
 // Local imports.
 const User = require('../models/user')
 const Service = require('../models/service')
-const { protocol } = require('../config.js')
-
 
 // Authenticate user without forwarding them to any service.
 authenticateRouter.post('/', async (req, res, next) => {
@@ -80,7 +78,7 @@ authenticateRouter.post('/:domain', async (req, res, next) => {
 
     // Confirm to the service that the user has been authenticated.
     const response = await axios.post(
-      `${protocol}://${domain}/api/authorize`,
+      `${service.protocol}://${domain}/api/authorize`,
 
       // Send the authentication password, so that
       // the service knows its the user service that is sending the request.

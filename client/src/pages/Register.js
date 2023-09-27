@@ -13,7 +13,7 @@ const Register = () => {
   const {
     user,
     setUser,
-    allowedDomains
+    publicServices
   } = useStore()
 
   const [email, setEmail]                 = useState('')
@@ -29,7 +29,7 @@ const Register = () => {
   // /register/?domain=test
   console.log('domain url parameter: ', domain)
 
-  if (domain && !allowedDomains.find(d => d === domain)) return (
+  if (domain && !publicServices.find(s => s.domain === domain)) return (
     <div>
       <br/><br/>
       <h4>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</h4>
