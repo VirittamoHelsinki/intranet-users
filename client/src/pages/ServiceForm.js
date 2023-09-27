@@ -19,6 +19,7 @@ const ServiceForm = () => {
 
     const [name, setName] = useState('')
     const [domain, setDomain] = useState('')
+    const [protocol, setProtocol] = useState('https')
     const [serviceKey, setServiceKey] = useState('')
 
     const [editing, setEditing] = useState(false)
@@ -55,6 +56,7 @@ const ServiceForm = () => {
         const serviceObject = {
             name,
             domain,
+            protocol,
             serviceKey
         }
 
@@ -114,11 +116,15 @@ const ServiceForm = () => {
                 <RadioGroup defaultValue="comfortable">
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="default" id="r1" />
-                        <Label htmlFor="r1">http</Label>
+                        <Label htmlFor="r1" onClick={() => setProtocol('http')}>
+                            http
+                        </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="comfortable" id="r2" />
-                        <Label htmlFor="r2">https</Label>
+                        <Label htmlFor="r2" onClick={() => setProtocol('https')}>
+                            https
+                        </Label>
                     </div>
                 </RadioGroup>
                 <Button type="submit">Tallenna</Button>
