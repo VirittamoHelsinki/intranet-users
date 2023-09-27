@@ -4,7 +4,7 @@ const port = process.env.PORT
 
 // Email used for sending password reset links.
 const email = process.env.SERVICE_EMAIL
-const emailPW = process.env.SERVICE_EMAIL_PASSWORD
+const emailPW = process.env.SERVICE_EMAIL_APP_KEY
 
 // URL of this service.
 const url = process.env.URL
