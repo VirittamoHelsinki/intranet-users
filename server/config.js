@@ -1,14 +1,13 @@
 require('dotenv').config()
 
 const port = process.env.PORT
-const apiUrl = process.env.API_URL
 
 // Email used for sending password reset links.
 const email = process.env.SERVICE_EMAIL
 const emailPW = process.env.SERVICE_EMAIL_PASSWORD
 
 // URL of this service.
-const url = process.env.DOMAIN
+const url = process.env.URL
 
 const environment = process.env.NODE_ENV
 
@@ -21,7 +20,6 @@ else if (environment === 'production') mongoUrl = process.env.PRODUCTION_MONGODB
 const secret = process.env.SECRET
 
 module.exports = {
-  apiUrl,
   mongoUrl,
   port,
   email,
