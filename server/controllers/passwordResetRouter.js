@@ -120,7 +120,7 @@ pwResetRouter.post('/', async (req, res, next) => {
 
     console.log(createdReset)
     
-    const url = `${config.url}${config.apiUrl}/reset/${createdReset._id}`
+    const url = `${config.url}/api/reset/${createdReset._id}`
     
     // Define the email.
     const mailOptions = {
