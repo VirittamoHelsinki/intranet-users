@@ -1,4 +1,4 @@
-const environment = process.env.NODE_ENV
+const environment = process.env.REACT_APP_ENV
 
 // Development mode configuration (default)
 let apiUrl = process.env.REACT_APP_API_URL_DEV

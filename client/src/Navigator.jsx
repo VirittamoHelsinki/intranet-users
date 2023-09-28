@@ -162,19 +162,19 @@ function Navbar() {
 // Contains the navbar and the router.
 export default function Navigator() {
 
-    const { setAllowedDomains } = useStore()
+    const { setPublicServices } = useStore()
 
     // Load the allowed domains from the server and save them to the state.
-    const loadAllowedDomains = async () => {
+    const loadPublicServices = async () => {
         try {
-            const domains = await commonApi.getAll('/services/domains')
-            setAllowedDomains(domains)
+            const services = await serviceApi.getAllPublic()
+            setPublicServices(services)
 
         } catch (exception) { console.log('exception: ', exception) }
     }
 
     useEffect(() => {
-        loadAllowedDomains()
+        loadPublicServices()
     }, [])
 
     return (
