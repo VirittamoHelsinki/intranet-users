@@ -1,0 +1,156 @@
+// node imports
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import Cookies from 'universal-cookie'
+
+import authenticateApi from '../api/authenticate'
+import authorizeApi from '../api/authorize'
+
+import useStore from '../store'
+import { Label } from '../components/ui/label'
+import { Input } from '../components/ui/input'
+import { Button } from '../components/ui/button'
+
+export default function Login() {
+    const {
+        user,
+        publicServices,
+        setUser
+    } = useStore()
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const navigate = useNavigate()
+
+    const [searchParams] = useSearchParams()
+
+    // url/?domain=example.com
+    const domain = searchParams.get("domain")
+
+    useEffect(() => {
+
+        if (user && domain && publicServices.find(s => s.domain === domain)) {
+
+            // If the user is already logged in and the domain parameter is specified,
+            // redirect the user to the external service with the service key.
+            authorizeAndRedirectUserToService()
+        }
+
+    }, [publicServices.length, user])
+
+    const authorizeAndRedirectUserToService = async () => {
+        const data = await authorizeApi.authorizeForService(domain)
+        const service = publicServices.find(s => s.domain === domain)
+
+        if (!service) return console.log('service not found for domain: ', domain)
+
+        const protocol = service.protocol
+
+        window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`
+    }
+
+    if (domain && !publicServices.find(s => s.domain === domain)) return (
+        <div>
+            <br /><br />
+            <h4>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</h4>
+        </div>
+    )
+
+    if (user) {
+        return (
+            <div>
+                <br /><br />
+                <h4>Olet kirjautunut sisään sähköpostilla: {user.email}</h4>
+            </div>
+        )
+    }
+
+    const loginButton = async (event) => {
+        event.preventDefault()
+
+        const credentials = {
+            email,
+            password
+        }
+
+        let authenticatedUser = null
+
+        try {
+            if (domain) {
+                // If an external service was specified with the domain parameter.
+                authenticatedUser = await authenticateApi.authenticateForService(credentials, domain)
+            } else {
+                authenticatedUser = await authenticateApi.authenticate(credentials)
+            }
+
+        } catch (exception) { console.log('exception: ', exception) }
+
+        if (authenticatedUser) {
+            authorizeApi.setToken(authenticatedUser.token)
+
+            const cookies = new Cookies()
+
+            cookies.set('usersToken', authenticatedUser.token, {
+                // Cookie expires in 60 days.
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 60),
+                path: '/'
+            })
+
+            setUser(authenticatedUser)
+
+            if (domain) {
+                // If an external service was specified with the domain parameter.
+
+                const service = publicServices.find(s => s.domain === domain)
+
+                if (!service) return console.log('service not found for domain: ', domain)
+
+                const protocol = service.protocol
+
+                window.location.href = `${protocol}://${domain}/?user_key=${authenticatedUser.user_key}`
+
+            } else navigate('/')
+
+        } else alert("Failed to login. Wrong email or password?")
+    }
+
+    return (
+        <main className='flex flex-col min-h-0 flex-1 gap-3 px-4 py-2'>
+            <div className="flex flex-col grow justify-center items-center">
+                <div className='flex flex-col w-full max-w-xs gap-2'>
+                    <h2 className="text-xl">Kirjaudu Sisään Intranettiin</h2>
+                    <p className="text-xs opacity-70">
+                        Muista käyttää etunimi.sukunimi@edu.hel.fi sähköpostia
+                    </p>
+                    <form onSubmit={loginButton} className='flex flex-col gap-4'>
+                        <div className=''>
+                            <Label htmlFor='email'>Sähköposti</Label>
+                            <Input
+                                id='email'
+                                type="text"
+                                value={email}
+                                onChange={event => setEmail(event.target.value)}
+                            />
+                        </div>
+                        <div className=''>
+                            <Label htmlFor='password'>Salasana</Label>
+                            <Input
+                                id='password'
+                                type="password"
+                                value={password}
+                                onChange={event => setPassword(event.target.value)}
+                            />
+                        </div>
+                        <Button type="submit">Kirjaudu sisään</Button>
+                    </form>
+                    <div className='flex flex-col pt-3'>
+                        <Link to="/resetpassword" href="" className="loginLink">
+                            Unohditko salasanan?
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </main>
+    )
+}

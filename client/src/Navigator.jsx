@@ -1,6 +1,6 @@
 // node imports
 import { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
 import Cookies from 'universal-cookie'
 
 // file imports
@@ -26,6 +26,39 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from './components/ui/dropdown-menu'
+
+import { Moon, Sun } from "lucide-react"
+
+import { Button } from "./components/ui/button"
+import { useTheme } from "./components/theme-provider"
+
+export function ModeToggle() {
+    const { setTheme } = useTheme()
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <span className="sr-only">Toggle theme</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                    Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                    System
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+}
+
 
 function UserNav() {
     const {
@@ -90,19 +123,21 @@ function UserNav() {
 }
 
 function Navbar() {
+    const { pathname } = useLocation()
     const { user } = useStore()
 
     if (user) {
         return (
             <header className="flex items-center justify-between px-4 pb-2 pt-4 sm:px-8 sm:py-4">
-                <a href={portalUrl} className="relative whitespace-nowrap text-2xl font-bold">
+                <a href='/' className="relative whitespace-nowrap text-2xl font-bold">
                     Intranet{" "}
                     <sup className="absolute left-[calc(100%+.25rem)] top-0 text-xs font-extrabold text-gray-400">
                         [admin]
                     </sup>
                 </a>
-                <nav>
+                <nav className='flex items-center gap-5'>
                     <UserNav />
+                    <ModeToggle />
                 </nav>
             </header>
         )
@@ -115,13 +150,9 @@ function Navbar() {
                     [admin]
                 </sup>
             </a>
-            <nav>
-                <li>
-                    <Link to="/">Kirjaudu</Link>
-                </li>
-                <li>
-                    <Link to="/register">Rekisteröidy</Link>
-                </li>
+            <nav className='flex items-center gap-3'>
+                {pathname === '/register' ? <Link to="/">Kirjaudu</Link> : <Link to="/register">Rekisteröidy</Link>}
+                <ModeToggle />
             </nav>
         </header>
     )
