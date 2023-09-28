@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import servicesApi from '../api/services'
 import usersApi from '../api/users'
@@ -37,62 +37,8 @@ import {
     SelectValue,
 } from "../components/ui/select"
 
-function TableOptions({ u }) {
-    const users = useStore((state) => state.users)
-
-    const toggleAdmin = async u => {
-        try {
-            u.admin = !u.admin
-            const updatedUser = await usersApi.update(u._id, u)
-
-            setUsers(users.map(u => u._id === updatedUser._id ? updatedUser : u))
-
-        } catch (exception) { console.log('exception: ', exception) }
-    }
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                >
-                    <MoreHorizontalIcon className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem>
-                    <SetAccessLevel user={u} />
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <button
-                        onClick={() => toggleAdmin(u)}
-                    >
-                        {u.admin ? 'poista oikeudet' : 'anna oikeudet'}
-                    </button>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <button
-                        onClick={async () => {
-                            if (confirm('Oletko varma että haluat poistaa käyttäjän?')) {
-                                await usersApi.remove(u._id)
-                                setUsers(users.filter(user => user._id !== u._id))
-                            }
-                        }}
-                        className="buttonBlack"
-                    >
-                        poista
-                    </button>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
-}
-
-const SetAccessLevel = ({ user }) => {
+const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
+function SetAccessLevel({ user, setOpen }) {
     const { services, users, setUsers } = useStore()
 
     const [accessLevel, setAccessLevel] = useState(1)
@@ -118,60 +64,103 @@ const SetAccessLevel = ({ user }) => {
     }
 
     return (
-        <div className='flex flex-col'>
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline">Määritä</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Määritä Käyttöoikeustaso</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your profile here. Click save when you're done.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex items-end gap-4 py-4">
-                        <div className="flex flex-col gap-2">
-                            <Label htmlFor="kayttooikeustaso" className="">
-                                Käyttöoikeustaso
-                            </Label>
-                            <Input
-                                id="name"
-                                className="col-span-3"
-                                value={accessLevel}
-                                onChange={event => setAccessLevel(Number(event.target.value))}
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Select
-                                name={service ? service.name : ''}
-                                value={service ? service._id : ''}
-                                onChange={event =>
-                                    setService(services.find(s => s._id === event.target.value))
-                                }
-                            >
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Select a fruit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Fruits</SelectLabel>
-                                        {services.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit" onClick={uploadAccessLevel}>
-                            tallenna
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
+        <DialogContent
+            className="sm:max-w-[425px]"
+        >
+            <DialogHeader>
+                <DialogTitle>Määritä Käyttöoikeustaso</DialogTitle>
+                <DialogDescription>
+                    Tee muutoksia käyttäjän käyttöoikeuksiin. Paina Tallenna, kun olet valmis.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-end gap-4 py-4">
+                <div className="flex flex-col gap-2">
+                    <Label htmlFor="kayttooikeustaso" className="">
+                        Käyttöoikeustaso
+                    </Label>
+                    <Input
+                        id="name"
+                        className="col-span-3"
+                        value={accessLevel}
+                        onChange={event => setAccessLevel(Number(event.target.value))}
+                    />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Select
+                        onValueChange={(value) =>
+                            setService(services.find(s => s._id === value))
+                        }>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Valitse Palvelu" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Palvelut</SelectLabel>
+                                {services.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <DialogFooter>
+                <Button onClick={uploadAccessLevel}>
+                    Tallenna
+                </Button>
+            </DialogFooter>
+        </DialogContent>
     )
 }
+
+function TableOptions({ u }) {
+    const [open, setOpen] = useState(false)
+    const dropdownTriggerRef = React.useRef(null);
+    const {users,  setUsers} = useStore()
+
+    const toggleAdmin = async (u) => {
+        try {
+            u.admin = !u.admin
+            const updatedUser = await usersApi.update(u._id, u)
+
+            setUsers(users.map(u => u._id === updatedUser._id ? updatedUser : u))
+
+        } catch (exception) { console.log('exception: ', exception) }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DropdownMenu>
+                <DropdownMenuTrigger ref={dropdownTriggerRef}>
+                    <Button
+                        variant="ghost"
+                        className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                    >
+                        <MoreHorizontalIcon className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[160px]">
+                    <DialogTrigger asChild>
+                        <DropdownMenuItem>Määritä</DropdownMenuItem>
+                    </DialogTrigger>
+                    <DropdownMenuItem onClick={() => toggleAdmin(u)} >
+                        {u.admin ? 'Poista oikeudet' : 'Anna oikeudet'}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={async () => {
+                        if (confirm('Oletko varma että haluat poistaa käyttäjän?')) {
+                            await usersApi.remove(u._id)
+                            setUsers(users.filter(user => user._id !== u._id))
+                        }
+                    }}>
+                        poista
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            <SetAccessLevel user={u} ref={dropdownTriggerRef} />
+        </Dialog>
+    )
+}
+
 
 const Users = () => {
     const {
@@ -212,57 +201,56 @@ const Users = () => {
     )
 
     return (
-        <main className='flex flex-col min-h-0 flex-1 gap-3 px-4 py-2'>
-            <h2 className='text-2xl font-bold'>Intranetin Käyttöoikeuksien Hallinta</h2>
-            <p className='max-w-4xl'>
-                Tällä sivulla järjestelmänvalvoja voi muokata käyttäjien palvelukohtaisia
-                käyttöoikeuksia. Käyttöoikeuksien muutokset tulevat voimaan kun käyttäjä
-                kirjautuu ulos ja takaisin sisään, tai viimeistään kahden päivän kuluttua
-                muutoksesta, kun käyttäjän token vanhenee ja hän joutuu kirjautumaan
-                uudelleen sisään.
-            </p>
-            <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[100px]">Sähköposti</TableHead>
-                        <TableHead>Käyttöoikeustasot</TableHead>
-                        <TableHead>Rooli</TableHead>
-                        <TableHead className="text-right"></TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {users.map((u) => (
-                        <TableRow key={u._id}>
-                            <TableCell className="font-medium">{u.email}</TableCell>
-                            <TableCell>
-                                <ul className="flex flex-col">
-                                    {u.access.map(a => {
-                                        const service = services.find(s => s._id === a.service)
-
-                                        if (!service) return null
-
-                                        return (
-                                            <li key={a.service + u._id}>
-                                                {service.name}: {a.level}
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
-                            </TableCell>
-                            <TableCell>
-                                {u.admin ? 'Admin' : 'User'}
-                            </TableCell>
-                            <TableCell>
-                                <SetAccessLevel u={u} />
-                            </TableCell>
-                            <TableCell>
-                                <TableOptions u={u} />
-                            </TableCell>
+        <main className='flex flex-col justify-center items-center px-4 py-3'>
+            <div className='flex flex-col items-start w-full max-w-5xl gap-2'>
+                <h2 className='text-3xl font-bold'>Intranetin Käyttöoikeuksien Hallinta</h2>
+                <p className='opacity-70'>
+                    Tällä sivulla järjestelmänvalvoja voi muokata käyttäjien palvelukohtaisia
+                    käyttöoikeuksia. Käyttöoikeuksien muutokset tulevat voimaan kun käyttäjä
+                    kirjautuu ulos ja takaisin sisään, tai viimeistään kahden päivän kuluttua
+                    muutoksesta, kun käyttäjän token vanhenee ja hän joutuu kirjautumaan
+                    uudelleen sisään.
+                </p>
+                <Table>
+                    <TableCaption>Lista Käyttöoikeuksita käyttäjillä</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[100px]">Sähköposti</TableHead>
+                            <TableHead>Käyttöoikeustasot</TableHead>
+                            <TableHead>Rooli</TableHead>
+                            <TableHead className="text-right"></TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {users.map((u) => (
+                            <TableRow key={u._id}>
+                                <TableCell className="font-medium">{u.email}</TableCell>
+                                <TableCell>
+                                    <ul className="flex flex-col">
+                                        {u.access.map(a => {
+                                            const service = services.find(s => s._id === a.service)
+
+                                            if (!service) return null
+
+                                            return (
+                                                <li key={a.service + u._id}>
+                                                    {service.name}: {a.level}
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </TableCell>
+                                <TableCell>
+                                    {u.admin ? 'Admin' : 'User'}
+                                </TableCell>
+                                <TableCell>
+                                    <TableOptions u={u} />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
         </main>
     )
 }

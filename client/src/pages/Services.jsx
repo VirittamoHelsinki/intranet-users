@@ -1,11 +1,11 @@
 // node imports
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 import servicesApi from '../api/services'
 import useStore from '../store'
 import { Button } from '../components/ui/button'
-import { EyeIcon, EyeOffIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react'
+import { ClipboardCopy, ClipboardX, EyeIcon, EyeOffIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu'
 
@@ -14,6 +14,7 @@ function MoreOptions({ service }) {
         services,
         setServices
     } = useStore()
+    const navigate = useNavigate()
 
     return (
         <DropdownMenu>
@@ -27,27 +28,47 @@ function MoreOptions({ service }) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem>
-                    <button onClick={() => navigate(`/services/${service._id}`)}>
-                        muokkaa
-                    </button>
+                <DropdownMenuItem onClick={() => navigate(`/services/${service._id}`)}>
+                    muokkaa
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <button onClick={() => {
-                        servicesApi
-                            .remove(service._id)
-                            .then(() => {
-                                setServices(services.filter(s => s._id !== service._id))
-                            })
-                            .catch(error => console.log('error: ', error))
-                    }}>
-                        poista
-                    </button>
+                <DropdownMenuItem onClick={() => {
+                    servicesApi
+                        .remove(service._id)
+                        .then(() => {
+                            setServices(services.filter(s => s._id !== service._id))
+                        })
+                        .catch(error => console.log('error: ', error))
+                }}>
+                    poista
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
+}
+
+function CopyToClip({ service }) {
+    const [copy, setCopy] = useState(false);
+    const copyUrlToClipboard = (key) => {
+        setCopy(true);
+        navigator.clipboard.writeText(key);
+        console.log('key', key)
+        setTimeout(() => setCopy(false), 1000);
+    };
+    return (
+        <Button
+            className="-m-2 !p-2"
+            onClick={() => copyUrlToClipboard(service.serviceKey)}
+            variant="ghost"
+        >
+            {copy ? (
+                <ClipboardX className="h-5 w-5 opacity-70" />
+            ) : (
+                <ClipboardCopy className='h-5 w-5' />
+            )}
+            <span className="sr-only">kopio avain</span>
+        </Button>
+    );
 }
 
 function ServiceItems() {
@@ -55,8 +76,15 @@ function ServiceItems() {
         services,
         setServices
     } = useStore()
+    const [copy, setCopy] = useState(false);
+    const copyUrlToClipboard = (key) => {
+        setCopy(true);
+        navigator.clipboard.writeText(key);
+        console.log('key', key)
+        setTimeout(() => setCopy(false), 1000);
+    };
 
-    const showOrHideServiceKey = service => {
+    const showOrHideServiceKey = (service) => {
         service.showServiceKey = !service.showServiceKey
 
         setServices(services)
@@ -67,20 +95,20 @@ function ServiceItems() {
     return services.map(service => (
         <TableRow key={service._id}>
             <TableCell>{service.name}</TableCell>
+            <TableCell>{service.protocol}</TableCell>
             <TableCell>{service.domain}</TableCell>
             <TableCell className='overflow-hidden'>
                 {service.showServiceKey ? (
-                    <div className='overflow-x-scroll max-w-[160px]'>
-                        <p>{service.serviceKey}</p>
-                    </div>
-                ) : (
-                    '********'
-                )}
+                    <button className='max-w-[100px]' onClick={() => copyUrlToClipboard(service.serviceKey)} >
+                        <p>{copy ? 'kopioitu' : service.serviceKey}</p>
+                    </button>
+                ) : <p>********</p>}
             </TableCell>
-            <TableCell>
-                <button onClick={() => showOrHideServiceKey(service)}>
-                    {service.serviceKey ? <EyeIcon /> : <EyeOffIcon />}
-                </button>
+            <TableCell className='flex gap-5'>
+                <Button variant='ghost' className="p-2" onClick={() => showOrHideServiceKey(service)}>
+                    {service.showServiceKey ? <EyeOffIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
+                </Button>
+                {/*<CopyToClip service={service} />*/}
             </TableCell>
             <TableCell>
                 <MoreOptions service={service} />
@@ -89,7 +117,7 @@ function ServiceItems() {
     ))
 }
 
-const Services = () => {
+export default function Services() {
     const {
         user,
         setServices
@@ -112,24 +140,23 @@ const Services = () => {
 
     useEffect(() => {
         getServices()
-
     }, [user])
 
     if (!user || !user.admin) return (
-        <div>
-            <br /><br />
-            <h4>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h4>
-        </div>
+        <main className='flex flex-col grow justify-center items-center gap-2 px-4 py-3'>
+            <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
+            <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+        </main>
     )
 
     return (
         <main className='flex flex-col justify-center items-center px-4 py-3'>
-            <h2>Intranetin Palveluiden Hallinta</h2>
-            <p>
-                Tällä sivulla järjestelmänvalvoja voi lisätä, poistaa ja muokata järjestelmään
-                kuuluvia palveluita ja säätää näiden käyttöoikeuksia.
-            </p>
-            <div className='relative flex flex-col w-full justify-center items-center'>
+            <div className='flex flex-col items-start w-full max-w-5xl gap-2'>
+                <h2 className='text-3xl'>Intranetin Palveluiden Hallinta</h2>
+                <p className='opacity-70'>
+                    Tällä sivulla järjestelmänvalvoja voi lisätä, poistaa ja muokata järjestelmään
+                    kuuluvia palveluita ja säätää näiden käyttöoikeuksia.
+                </p>
                 <Button variant='outline' className='' onClick={() => navigate('/services/new')}>
                     <PlusIcon />
                     <span className="sr-only">Lisää palvelu</span>
@@ -139,8 +166,9 @@ const Services = () => {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-56">Nimi</TableHead>
+                            <TableHead className='w-20'>Protokolla</TableHead>
                             <TableHead className='w-56'>Domain</TableHead>
-                            <TableCell className='w-40'>Avain</TableCell>
+                            <TableHead className='w-40'>Avain</TableHead>
                             <TableHead className="w-10"></TableHead>
                             <TableHead className="w-10 text-right"></TableHead>
                         </TableRow>
@@ -154,5 +182,3 @@ const Services = () => {
     )
 
 }
-
-export default Services
