@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import servicesApi from '../api/services'
-import useStore from '../store'
+import { useStore } from '../store'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'

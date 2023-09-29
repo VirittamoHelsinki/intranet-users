@@ -1,10 +1,7 @@
-// node imports
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
-// file imports
 import resetApi from '../api/reset'
-import useStore from '../store'
+import {useStore} from '../store'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'

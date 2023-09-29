@@ -1,9 +1,8 @@
-// node imports
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import servicesApi from '../api/services'
-import useStore from '../store'
+import { useStore } from '../store'
 import { Button } from '../components/ui/button'
 import { ClipboardCopy, ClipboardX, EyeIcon, EyeOffIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table'

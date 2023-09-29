@@ -14,7 +14,7 @@ import Users from './pages/Users'
 
 import authorizeApi from './api/authorize'
 import serviceApi from './api/services'
-import useStore from './store'
+import { useStore } from './store'
 import { portalUrl } from './config'
 
 import {

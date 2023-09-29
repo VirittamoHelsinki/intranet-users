@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react'
-
+import { useState, useEffect, useRef } from 'react'
 import servicesApi from '../api/services'
 import usersApi from '../api/users'
-import useStore from '../store'
-
+import { useStore } from '../store'
 import {
     Table,
     TableBody,
@@ -36,8 +34,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../components/ui/select"
+import { Link } from 'react-router-dom'
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
 function SetAccessLevel({ user, setOpen }) {
     const { services, users, setUsers } = useStore()
 
@@ -113,8 +111,8 @@ function SetAccessLevel({ user, setOpen }) {
 
 function TableOptions({ u }) {
     const [open, setOpen] = useState(false)
-    const dropdownTriggerRef = React.useRef(null);
-    const {users,  setUsers} = useStore()
+    const dropdownTriggerRef = useRef(null);
+    const { users, setUsers } = useStore()
 
     const toggleAdmin = async (u) => {
         try {
@@ -161,8 +159,7 @@ function TableOptions({ u }) {
     )
 }
 
-
-const Users = () => {
+export default function Users() {
     const {
         user,
         users,
@@ -194,11 +191,14 @@ const Users = () => {
         loadServices()
     }, [user])
 
-    if (!user || !user.admin) return (
-        <div>
-            <h2>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
-        </div>
-    )
+    if (!user || !user.admin) {
+        return (
+            <main className='flex flex-col grow justify-center items-center gap-2 px-4 py-3'>
+                <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
+                <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+            </main>
+        )
+    }
 
     return (
         <main className='flex flex-col justify-center items-center px-4 py-3'>
@@ -254,5 +254,3 @@ const Users = () => {
         </main>
     )
 }
-
-export default Users

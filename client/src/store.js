@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 // Create a custom hook called useStore using Zustand library
-const useStore = create(set => ({
+export const useStore = create((set) => ({
     // initial state variables
     user: null,
 
@@ -10,7 +10,7 @@ const useStore = create(set => ({
 
     // Services here contain the serviceKey
     services: [],
-    
+
     users: [],
 
     // actions
@@ -19,5 +19,3 @@ const useStore = create(set => ({
     setServices: services => set({ services }),
     setUsers: users => set({ users })
 }))
-
-export default useStore

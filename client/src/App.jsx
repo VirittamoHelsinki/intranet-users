@@ -1,5 +1,5 @@
 import Navigator from './Navigator'
-import CookieTracker from './CookieTracker'
+import { CookieTracker } from './CookieTracker'
 import { ThemeProvider } from './components/theme-provider'
 
 export default function App() {

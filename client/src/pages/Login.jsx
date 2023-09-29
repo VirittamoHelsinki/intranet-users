@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie'
 import authenticateApi from '../api/authenticate'
 import authorizeApi from '../api/authorize'
 
-import useStore from '../store'
+import { useStore } from '../store'
 import { Label } from '../components/ui/label'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
@@ -101,7 +101,6 @@ export default function Login() {
 
             if (domain) {
                 // If an external service was specified with the domain parameter.
-
                 const service = publicServices.find(s => s.domain === domain)
 
                 if (!service) return console.log('service not found for domain: ', domain)
