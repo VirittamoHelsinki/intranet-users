@@ -1,0 +1,17 @@
+{
+  "name": "users",
+  "version": "1.0.0",
+  "description": "User service that handles user authentication, authorization and access control management for other apps.",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd server && npm start",
+    "dev": "cd server && npm run dev",
+    "install:server": "cd server && npm install",
+    "install:client": "cd server && npm install",
+    "install": "npm run install:server && npm run install:client",
+    "build:dev": "cd server: && npm run build:dev",
+    "build:prod": "cd server: && npm run build:prod"
+  },
+  "author": "",
+  "license": "ISC"
+}
