@@ -35,6 +35,7 @@ const ServiceForm = () => {
 
             setName(service.name)
             setDomain(service.domain)
+            setProtocol(service.protocol)
             setServiceKey(service.serviceKey)
         }
     }, [editing])
@@ -113,16 +114,24 @@ const ServiceForm = () => {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
-                <RadioGroup defaultValue="comfortable">
+                <RadioGroup defaultValue='default'>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="default" id="r1" />
-                        <Label htmlFor="r1" onClick={() => setProtocol('http')}>
+                        <RadioGroupItem
+                            value="default"
+                            id="r1"
+                            onClick={() => setProtocol('http')}
+                        />
+                        <Label htmlFor="r1">
                             http
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="comfortable" id="r2" />
-                        <Label htmlFor="r2" onClick={() => setProtocol('https')}>
+                        <RadioGroupItem
+                            value="comfortable"
+                            id="r2"
+                            onClick={() => setProtocol('https')}
+                        />
+                        <Label htmlFor="r2">
                             https
                         </Label>
                     </div>
