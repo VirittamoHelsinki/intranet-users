@@ -21,17 +21,6 @@ const {
 // From here on require valid authorization(token) on all routes.
 authorizeRouter.all('*', requireAuthorization)
 
-// Returns user information, for a client with a valid token.
-// A Simple way to check that the user has a valid token.
-authorizeRouter.get('/', async (req, res, next) => {
-    try {
-      const { user } = res.locals
-      
-      res.json(User.format(user))
-  
-    } catch (exception) { next(exception) }
-})
-
 
 // Route that authorizes the user to use a specific service,
 // that does authorization by itself. Called when the user
@@ -81,12 +70,25 @@ authorizeRouter.get('/app/:domain', async (req, res, next) => {
 })
 
 
+// Returns user information, for a client with a valid token.
+// The simplest way to check that the user has a valid token.
+authorizeRouter.get('/', async (req, res, next) => {
+  try {
+    const { user } = res.locals
+    
+    res.json(User.format(user))
+
+  } catch (exception) { next(exception) }
+})
+
+
 // Cheks whether the user has a high enough authorization level requested by
 // the service.
 authorizeRouter.get('/service/:name/:level', async (req, res, next) => {
   try {
     const { user } = res.locals
     let { name, level } = req.params
+    level = parseInt(level)
 
     if (!user) return res.status(401).json({ error: 'No valid user token.' })
 
