@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
             invite: props => `${props.value} is not a valid email!`
         }
   },
+  firstname: String,
+  lastname: String,
   passwordHash: {
     type: String,
     required: true
@@ -43,6 +45,8 @@ userSchema.methods.generateJWT = function generateJWT() {
   return jwt.sign({
     _id: this._id,
     email: this.email,
+    firstname: this.firstname,
+    lastname: this.lastname,
     admin: this.admin,
     access: this.access
   }, secret,
@@ -50,11 +54,13 @@ userSchema.methods.generateJWT = function generateJWT() {
 }
 
 userSchema.statics.format = user => {
-  const { _id, email, admin, access } = user
+  const { _id, email, firstname, lastname, admin, access } = user
 
   return {
     _id,
     email,
+    firstname,
+    lastname,
     admin,
     access
   }

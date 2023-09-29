@@ -162,7 +162,7 @@ export default function Services() {
                     <span className="sr-only">Lisää palvelu</span>
                 </Button>
                 <Table>
-                    <TableCaption>Lista Intranetin Palveluisti</TableCaption>
+                    <TableCaption>Lista Intranetin Palveluista</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-56">Nimi</TableHead>
