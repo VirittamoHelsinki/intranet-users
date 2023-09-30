@@ -22,6 +22,8 @@ const ServiceForm = () => {
     const [protocol, setProtocol] = useState('https')
     const [serviceKey, setServiceKey] = useState('')
 
+    console.log('rendering ServiceForm')
+
     const [editing, setEditing] = useState(false)
 
     const navigate = useNavigate()
@@ -38,7 +40,7 @@ const ServiceForm = () => {
             setProtocol(service.protocol)
             setServiceKey(service.serviceKey)
         }
-    }, [editing])
+    }, [editing, services.length])
 
     useEffect(() => {
         if (id && id !== 'new') setEditing(true)
@@ -114,10 +116,10 @@ const ServiceForm = () => {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
-                <RadioGroup defaultValue='default'>
+                <RadioGroup value={protocol}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                            value="default"
+                            value="http"
                             id="r1"
                             onClick={() => setProtocol('http')}
                         />
@@ -127,7 +129,7 @@ const ServiceForm = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                            value="comfortable"
+                            value="https"
                             id="r2"
                             onClick={() => setProtocol('https')}
                         />

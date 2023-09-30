@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-//const User = require('../models/user')
+const User = require('../models/user')
 const { secret } = require('../config')
 
 // 1. Tokens are added on the blacklist when a user logs out.
@@ -61,12 +61,48 @@ const getTokenFrom = req => {
 const processTokenErrors = (error, req, res, next) => {
   if (error.name === 'TokenExpiredError') {
     console.log('User token has expired!')
+    
     return res.status(401).json({ error: 'token expired' })
+  
   } else if (error.name === 'JsonWebTokenError') {
     console.log('error.message:', error.message)
+    
     return res.status(401).json({ error: error.message })
   
   } else return next(error)
+}
+
+
+// More efficient way to return the user data to the client.
+// It does not require a database query. If this is used however
+// the user access rights only update once the user logs out
+// and logs back in or when the token expires.
+const setUserUsingToken = (decodedToken, res) => {
+  res.locals.user = {
+    _id:    decodedToken._id,
+    email:  decodedToken.email,
+    firstname: decodedToken.firstname,
+    lastname: decodedToken.lastname,
+    admin:  decodedToken.admin,
+    access: decodedToken.access
+  }
+}
+
+// Getting the user information from the database, requires
+// a database request. This would run for every service request
+const setUserUsingDatabase = async (decodedToken, res, next) => {
+  try {
+  const user = await User.findById(decodedToken._id)
+  
+    res.locals.user = {
+      _id:    user._id,
+      email:  user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      admin:  user.admin,
+      access: user.access
+    }
+  } catch (error) { next(error) }
 }
 
 // Middleware that checks if the request has a valid token, in the authroziation header.
@@ -97,12 +133,13 @@ const requireAuthorization = async (req, res, next) => {
 
       // Add the user data to the response locals, so that
       // it can be used when checking user access rights.
-      res.locals.user = {
-        _id:    decodedToken._id,
-        email:  decodedToken.email,
-        admin:  decodedToken.admin,
-        access: decodedToken.access
-      }
+      setUserUsingToken(decodedToken, res)
+      
+      // replace the above with the line below to use the database
+      // instead of the token, so that access right updates are
+      // immediately available. This will add to the total response
+      // time of every service request in the intranet/portal network.
+      //await setUserUsingDatabase(decodedToken, res, next)
 
       next()
 
