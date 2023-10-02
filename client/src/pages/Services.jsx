@@ -51,7 +51,6 @@ function CopyToClip({ service }) {
     const copyUrlToClipboard = (key) => {
         setCopy(true);
         navigator.clipboard.writeText(key);
-        console.log('key', key)
         setTimeout(() => setCopy(false), 1000);
     };
     return (
@@ -79,7 +78,6 @@ function ServiceItems() {
     const copyUrlToClipboard = (key) => {
         setCopy(true);
         navigator.clipboard.writeText(key);
-        console.log('key', key)
         setTimeout(() => setCopy(false), 1000);
     };
 

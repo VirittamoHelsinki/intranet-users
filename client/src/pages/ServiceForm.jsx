@@ -44,16 +44,18 @@ export default function ServiceForm() {
 
     useEffect(() => {
         if (id !== 'new') setEditing(true)
-        else setEditing(false)
     }, [id])
 
 
-    if (!user || !user.admin) return (
-        <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
-            <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
-            <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
-        </main>
-    )
+    if (!user || !user.admin) {
+        return (
+            <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
+                <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+            </main>
+        )
+    }
+
     const onSubmit = (event) => {
         event.preventDefault()
 
@@ -82,7 +84,6 @@ export default function ServiceForm() {
         }
     }
 
-    console.log('protocol: ', protocol)
     return (
         <main className='flex flex-col items-center'>
             <h2>
@@ -118,7 +119,7 @@ export default function ServiceForm() {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
-                <RadioGroup defaultValue="https" onValueChange={setProtocol}>
+                <RadioGroup value={protocol} onValueChange={setProtocol}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="https" id="r2" />
                         <Label htmlFor="r2">

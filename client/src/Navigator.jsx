@@ -92,7 +92,7 @@ function UserNav() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem>
-                        <Link to='/profile' className='w-full'>
+                        <Link to='/profile' className='w-full h-full'>
                             Käyttäjän tiedot
                         </Link>
                     </DropdownMenuItem>
@@ -149,7 +149,7 @@ function Navbar() {
                 </sup>
             </a>
             <nav className='flex items-center gap-3'>
-                {pathname === '/register' ? <Link to="/">Kirjaudu</Link> : <Link to="/register">Rekisteröidy</Link>}
+                {pathname === '/register' ? <Link to="/">Kirjaudu sisään</Link> : <Link to="/register">Rekisteröidy</Link>}
                 <ModeToggle />
             </nav>
         </header>
