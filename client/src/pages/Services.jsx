@@ -89,31 +89,41 @@ function ServiceItems() {
         setServices(services)
     }
 
-    if (!services || services.length === 0) return <div>0 Palvelua</div>
+    if (!services || services.length === 0) {
+        return (
+            <TableRow>
+                <TableCell>0 Palvelua</TableCell>
+            </TableRow>
+        )
+    }
 
-    return services.map(service => (
-        <TableRow key={service._id}>
-            <TableCell>{service.name}</TableCell>
-            <TableCell>{service.protocol}</TableCell>
-            <TableCell>{service.domain}</TableCell>
-            <TableCell className='overflow-hidden'>
-                {service.showServiceKey ? (
-                    <button className='max-w-[100px]' onClick={() => copyUrlToClipboard(service.serviceKey)} >
-                        <p>{copy ? 'kopioitu' : service.serviceKey}</p>
-                    </button>
-                ) : <p>********</p>}
-            </TableCell>
-            <TableCell className='flex gap-5'>
-                <Button variant='ghost' className="p-2" onClick={() => showOrHideServiceKey(service)}>
-                    {service.showServiceKey ? <EyeOffIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
-                </Button>
-                {/*<CopyToClip service={service} />*/}
-            </TableCell>
-            <TableCell>
-                <MoreOptions service={service} />
-            </TableCell>
-        </TableRow>
-    ))
+    return (
+        <>
+            {services.map((service) => (
+                <TableRow key={service._id}>
+                    <TableCell>{service.name}</TableCell>
+                    <TableCell>{service.protocol}</TableCell>
+                    <TableCell>{service.domain}</TableCell>
+                    <TableCell className='overflow-hidden'>
+                        {service.showServiceKey ? (
+                            <button className='max-w-[100px]' onClick={() => copyUrlToClipboard(service.serviceKey)} >
+                                <p>{copy ? 'kopioitu' : service.serviceKey}</p>
+                            </button>
+                        ) : <p>********</p>}
+                    </TableCell>
+                    <TableCell className='flex gap-5'>
+                        <Button variant='ghost' className="p-2" onClick={() => showOrHideServiceKey(service)}>
+                            {service.showServiceKey ? <EyeOffIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
+                        </Button>
+                        {/*<CopyToClip service={service} />*/}
+                    </TableCell>
+                    <TableCell>
+                        <MoreOptions service={service} />
+                    </TableCell>
+                </TableRow>
+            ))}
+        </>
+    )
 }
 
 export default function Services() {
@@ -142,14 +152,14 @@ export default function Services() {
     }, [user])
 
     if (!user || !user.admin) return (
-        <main className='flex flex-col grow justify-center items-center gap-2 px-4 py-3'>
+        <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
             <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
         </main>
     )
 
     return (
-        <main className='flex flex-col justify-center items-center px-4 py-3'>
+        <main className='flex flex-col justify-center items-center px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <div className='flex flex-col items-start w-full max-w-5xl gap-2'>
                 <h2 className='text-3xl'>Intranetin Palveluiden Hallinta</h2>
                 <p className='opacity-70'>
@@ -161,7 +171,7 @@ export default function Services() {
                     <span className="sr-only">Lisää palvelu</span>
                 </Button>
                 <Table>
-                    <TableCaption>Lista Intranetin Palveluisti</TableCaption>
+                    <TableCaption>Lista Intranetin Palveluista</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-56">Nimi</TableHead>

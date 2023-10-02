@@ -11,7 +11,13 @@ import {
     TableHeader,
     TableRow,
 } from "../components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../components/ui/dropdown-menu'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from '../components/ui/dropdown-menu'
 import { Button } from '../components/ui/button'
 import { MoreHorizontalIcon } from 'lucide-react'
 import {
@@ -36,7 +42,7 @@ import {
 } from "../components/ui/select"
 import { Link } from 'react-router-dom'
 
-function SetAccessLevel({ user, setOpen }) {
+function SetAccessLevel({ user }) {
     const { services, users, setUsers } = useStore()
 
     const [accessLevel, setAccessLevel] = useState(1)
@@ -62,9 +68,7 @@ function SetAccessLevel({ user, setOpen }) {
     }
 
     return (
-        <DialogContent
-            className="sm:max-w-[425px]"
-        >
+        <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
                 <DialogTitle>Määritä Käyttöoikeustaso</DialogTitle>
                 <DialogDescription>
@@ -101,7 +105,7 @@ function SetAccessLevel({ user, setOpen }) {
                 </div>
             </div>
             <DialogFooter>
-                <Button onClick={uploadAccessLevel}>
+                <Button variant='default' onClick={uploadAccessLevel}>
                     Tallenna
                 </Button>
             </DialogFooter>
@@ -111,7 +115,6 @@ function SetAccessLevel({ user, setOpen }) {
 
 function TableOptions({ u }) {
     const [open, setOpen] = useState(false)
-    const dropdownTriggerRef = useRef(null);
     const { users, setUsers } = useStore()
 
     const toggleAdmin = async (u) => {
@@ -125,37 +128,38 @@ function TableOptions({ u }) {
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DropdownMenu>
-                <DropdownMenuTrigger ref={dropdownTriggerRef}>
-                    <Button
-                        variant="ghost"
-                        className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                    >
-                        <MoreHorizontalIcon className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[160px]">
-                    <DialogTrigger asChild>
-                        <DropdownMenuItem>Määritä</DropdownMenuItem>
-                    </DialogTrigger>
-                    <DropdownMenuItem onClick={() => toggleAdmin(u)} >
-                        {u.admin ? 'Poista oikeudet' : 'Anna oikeudet'}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={async () => {
-                        if (confirm('Oletko varma että haluat poistaa käyttäjän?')) {
-                            await usersApi.remove(u._id)
-                            setUsers(users.filter(user => user._id !== u._id))
-                        }
-                    }}>
-                        poista
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            <SetAccessLevel user={u} ref={dropdownTriggerRef} />
-        </Dialog>
+        <>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger >
+                        <div
+                            className="inline-flex items-center justify-center h-8 w-8 p-0 hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                        >
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                            <span className="sr-only">Open menu</span>
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                        <DialogTrigger asChild>
+                            <DropdownMenuItem>Määritä</DropdownMenuItem>
+                        </DialogTrigger>
+                        <DropdownMenuItem onClick={() => toggleAdmin(u)} >
+                            {u.admin ? 'Poista oikeudet' : 'Anna oikeudet'}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={async () => {
+                            if (confirm('Oletko varma että haluat poistaa käyttäjän?')) {
+                                await usersApi.remove(u._id)
+                                setUsers(users.filter(user => user._id !== u._id))
+                            }
+                        }}>
+                            poista
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <SetAccessLevel user={u} />
+            </Dialog>
+        </>
     )
 }
 
@@ -193,7 +197,7 @@ export default function Users() {
 
     if (!user || !user.admin) {
         return (
-            <main className='flex flex-col grow justify-center items-center gap-2 px-4 py-3'>
+            <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
                 <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
                 <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
             </main>
@@ -201,7 +205,7 @@ export default function Users() {
     }
 
     return (
-        <main className='flex flex-col justify-center items-center px-4 py-3'>
+        <main className='flex flex-col justify-center items-center px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <div className='flex flex-col items-start w-full max-w-5xl gap-2'>
                 <h2 className='text-3xl font-bold'>Intranetin Käyttöoikeuksien Hallinta</h2>
                 <p className='opacity-70'>
@@ -227,7 +231,7 @@ export default function Users() {
                                 <TableCell className="font-medium">{u.email}</TableCell>
                                 <TableCell>
                                     <ul className="flex flex-col">
-                                        {u.access.map(a => {
+                                        {u.access.map((a) => {
                                             const service = services.find(s => s._id === a.service)
 
                                             if (!service) return null

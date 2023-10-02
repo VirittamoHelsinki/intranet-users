@@ -10,7 +10,7 @@ export default function Profile() {
     const { email, admin } = user
 
     return (
-        <main className='flex flex-col justify-center items-center px-4 py-3'>
+        <main className='flex flex-col justify-center items-center px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <div className='flex flex-col items-start w-full max-w-sm gap-2'>
                 <h2 className='text-3xl font-bold'>Käyttäjän tiedot</h2>
                 <p className='opacity-70'>Sähköposti: {email}</p>
