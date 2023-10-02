@@ -46,16 +46,16 @@ export default function ServiceForm() {
         if (id && id !== 'new') setEditing(true)
     }, [id])
 
-    console.log('id: ', id)
-    console.log('param: ', id && id !== 'new' ? true : false)
 
-    if (!user || !user.admin) return (
-        <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
-            <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
-            <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
-        </main>
-    )
-    //TODO:Fix not being able to create new services
+    if (!user || !user.admin) {
+        return (
+            <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
+                <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+            </main>
+        )
+    }
+
     const onSubmit = (event) => {
         event.preventDefault()
 
@@ -84,11 +84,10 @@ export default function ServiceForm() {
         }
     }
 
-    console.log('protocol: ', protocol)
     return (
         <main className='flex flex-col items-center'>
             <h2>
-                {id ? 'Muokkaa palvelua' : 'Luo uusi palvelu'}
+                {id !== 'new' ? 'Muokkaa palvelua' : 'Luo uusi palvelu'}
             </h2>
             <form onSubmit={onSubmit} className='flex flex-col gap-3 max-w-md'>
                 <div>
@@ -120,26 +119,14 @@ export default function ServiceForm() {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
-                <RadioGroup value={protocol}>
+                <RadioGroup value={protocol} onValueChange={setProtocol}>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem
-                            value="https"
-                            id="r2"
-                            onClick={() => setProtocol('https')}
-                        />
-                        <Label htmlFor="r2">
-                            https
-                        </Label>
+                        <RadioGroupItem value="https" id="r2" />
+                        <Label htmlFor="r2">https</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem
-                            value="http"
-                            id="r1"
-                            onClick={() => setProtocol('http')}
-                        />
-                        <Label htmlFor="r1">
-                            http
-                        </Label>
+                        <RadioGroupItem value="http" id="r1" />
+                        <Label htmlFor="r1">http</Label>
                     </div>
                 </RadioGroup>
                 <Button type="submit">Tallenna</Button>
@@ -147,3 +134,7 @@ export default function ServiceForm() {
         </main>
     )
 }
+
+
+
+

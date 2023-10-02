@@ -91,20 +91,20 @@ function UserNav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <Link to='/profile' className='w-full'>
+                    <DropdownMenuItem className='p-0'>
+                        <Link to='/profile' className='w-full py-1.5 px-2'>
                             Käyttäjän tiedot
                         </Link>
                     </DropdownMenuItem>
                     {user?.admin && (
                         <>
-                            <DropdownMenuItem>
-                                <Link to='/services' className='w-full'>
+                            <DropdownMenuItem className='p-0'>
+                                <Link to='/services' className='w-full py-1.5 px-2'>
                                     Palveluiden hallinta
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Link to='/users' className='w-full'>
+                            <DropdownMenuItem className='p-0'>
+                                <Link to='/users' className='w-full py-1.5 px-2'>
                                     Käyttöoikeuksien hallinta
                                 </Link>
                             </DropdownMenuItem>
@@ -149,7 +149,7 @@ function Navbar() {
                 </sup>
             </a>
             <nav className='flex items-center gap-3'>
-                {pathname === '/register' ? <Link to="/">Kirjaudu</Link> : <Link to="/register">Rekisteröidy</Link>}
+                {pathname === '/register' ? <Link to="/">Kirjaudu sisään</Link> : <Link to="/register">Rekisteröidy</Link>}
                 <ModeToggle />
             </nav>
         </header>

@@ -227,7 +227,7 @@ export default function Users() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users.map((u) => (
+                        {users.sort((a, b) => a.email > b.email ? 1 : -1).map((u) => (
                             <TableRow key={u._id}>
                                 <TableCell className="font-medium">{u.email}</TableCell>
                                 <TableCell>
