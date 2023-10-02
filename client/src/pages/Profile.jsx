@@ -1,44 +1,21 @@
-import useStore from '../store'
+import { useStore } from '../store'
 
-const Profile = () => {
-  
-  const { user } = useStore()
+export default function Profile() {
+    const user = useStore((state) => state.user)
+    if (!user) return (
+        <main>
+            <h2>Sinun tulee kirjautua sisään nähdäksesi tämän sivun.</h2>
+        </main>
+    )
+    const { email, admin } = user
 
-  if (!user) return (
-    <div>
-      <br/>
-      <br/>
-      <h3>Sinun tulee kirjautua sisään nähdäksesi tämän sivun.</h3>
-    </div>
-  )
-
-  const { email, admin } = user
-
-  return (
-    <div>
-
-      <br/>
-
-      <div style={{
-        marginLeft: '15px',
-        fontSize: '20px',
-        fontWeight: 'bold'
-      }}>
-        <h2 style={{
-          textAlign: 'center!important',
-          alignContent: 'center!important'
-        }}>
-          Käyttäjän tiedot
-        </h2>
-        <br/>
-        <p> Sähköposti: { email } </p>
-        {admin ? <p> Olet järjestelmänvalvoja </p> : null}
-      </div>
-
-      <br/>
-
-    </div>
-  )
+    return (
+        <main className='flex flex-col justify-center items-center px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+            <div className='flex flex-col items-start w-full max-w-sm gap-2'>
+                <h2 className='text-3xl font-bold'>Käyttäjän tiedot</h2>
+                <p className='opacity-70'>Sähköposti: {email}</p>
+                {admin && <p>Olet järjestelmänvalvoja</p>}
+            </div>
+        </main>
+    )
 }
-
-export default Profile

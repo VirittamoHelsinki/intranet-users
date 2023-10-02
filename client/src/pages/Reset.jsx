@@ -1,10 +1,7 @@
-// node imports
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
-// file imports
 import resetApi from '../api/reset'
-import useStore from '../store'
+import { useStore } from '../store'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -15,9 +12,10 @@ export default function Reset() {
     const { user } = useStore()
 
     if (user) return (
-        <div>
-            <h5>This page is only available when you are not logged in.</h5>
-        </div>
+        <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+            <h2 className='text-3xl'>This page is only available when you are not logged in.</h2>
+            <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+        </main>
     )
 
     const resetPassword = async event => {
@@ -33,7 +31,7 @@ export default function Reset() {
     }
 
     return (
-        <main className='flex flex-col min-h-0 grow justify-center items-center gap-3 px-4 py-2'>
+        <main className='flex flex-col min-h-0 grow justify-center items-center gap-3 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <div className="flex flex-col w-full max-w-xs gap-4">
                 <h2 className="text-xl">Vaihda salasanaa</h2>
                 <form onSubmit={resetPassword} className='flex flex-col gap-4'>

@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie'
 import authenticateApi from '../api/authenticate'
 import authorizeApi from '../api/authorize'
 
-import useStore from '../store'
+import { useStore } from '../store'
 import { Label } from '../components/ui/label'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
@@ -51,18 +51,16 @@ export default function Login() {
     }
 
     if (domain && !publicServices.find(s => s.domain === domain)) return (
-        <div>
-            <br /><br />
-            <h4>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</h4>
-        </div>
+        <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+            <p>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</p>
+        </main>
     )
 
     if (user) {
         return (
-            <div>
-                <br /><br />
-                <h4>Olet kirjautunut sisään sähköpostilla: {user.email}</h4>
-            </div>
+            <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <p>Olet kirjautunut sisään sähköpostilla: {user.email}</p>
+            </main>
         )
     }
 
@@ -101,7 +99,6 @@ export default function Login() {
 
             if (domain) {
                 // If an external service was specified with the domain parameter.
-
                 const service = publicServices.find(s => s.domain === domain)
 
                 if (!service) return console.log('service not found for domain: ', domain)
@@ -116,8 +113,7 @@ export default function Login() {
     }
 
     return (
-        <main className='flex flex-col min-h-0 flex-1 gap-3 px-4 py-2'>
-            <div className="flex flex-col grow justify-center items-center">
+        <main className='flex flex-col grow justify-center items-center gap-3 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
                 <div className='flex flex-col w-full max-w-xs gap-2'>
                     <h2 className="text-xl">Kirjaudu Sisään Intranettiin</h2>
                     <p className="text-xs opacity-70">
@@ -150,7 +146,6 @@ export default function Login() {
                         </Link>
                     </div>
                 </div>
-            </div>
         </main>
     )
 }

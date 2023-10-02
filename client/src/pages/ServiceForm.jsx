@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import servicesApi from '../api/services'
-import useStore from '../store'
+import { useStore } from '../store'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
@@ -10,7 +10,7 @@ import { Textarea } from '../components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
 
 // A form page for adding and editing services.
-const ServiceForm = () => {
+export default function ServiceForm() {
     const {
         user,
         services,
@@ -46,14 +46,17 @@ const ServiceForm = () => {
         if (id && id !== 'new') setEditing(true)
     }, [id])
 
-    if (!user || !user.admin) return (
-        <div>
-            <br /><br />
-            <h4>Vain järjestelmän valvojilla on oikeus käyttää tätä sivua.</h4>
-        </div>
-    )
+    console.log('id: ', id)
+    console.log('param: ', id && id !== 'new' ? true : false)
 
-    const onSubmit = event => {
+    if (!user || !user.admin) return (
+        <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+            <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
+            <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+        </main>
+    )
+    //TODO:Fix not being able to create new services
+    const onSubmit = (event) => {
         event.preventDefault()
 
         const serviceObject = {
@@ -81,8 +84,9 @@ const ServiceForm = () => {
         }
     }
 
+    console.log('protocol: ', protocol)
     return (
-        <div className='flex flex-col  items-center'>
+        <main className='flex flex-col items-center'>
             <h2>
                 {id ? 'Muokkaa palvelua' : 'Luo uusi palvelu'}
             </h2>
@@ -116,6 +120,19 @@ const ServiceForm = () => {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
+<<<<<<< HEAD
+                <RadioGroup defaultValue="https" onValueChange={setProtocol}>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="https" id="r2" />
+                        <Label htmlFor="r2">
+                            https
+                        </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="http" id="r1" />
+                        <Label htmlFor="r1" >
+                            http
+=======
                 <RadioGroup value={protocol}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem
@@ -135,13 +152,12 @@ const ServiceForm = () => {
                         />
                         <Label htmlFor="r2">
                             https
+>>>>>>> refs/remotes/origin/master
                         </Label>
                     </div>
                 </RadioGroup>
                 <Button type="submit">Tallenna</Button>
             </form>
-        </div>
+        </main>
     )
 }
-
-export default ServiceForm

@@ -14,7 +14,7 @@ import Users from './pages/Users'
 
 import authorizeApi from './api/authorize'
 import serviceApi from './api/services'
-import useStore from './store'
+import { useStore } from './store'
 import { portalUrl } from './config'
 
 import {
@@ -76,9 +76,9 @@ function UserNav() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <h1 className='text-xl'>
+                <p className='text-xl cursor-pointer'>
                     {user.email.substring(0, user.email.lastIndexOf("@"))}
-                </h1>
+                </p>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
@@ -92,19 +92,19 @@ function UserNav() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem>
-                        <Link to='/profile'>
+                        <Link to='/profile' className='w-full'>
                             Käyttäjän tiedot
                         </Link>
                     </DropdownMenuItem>
                     {user?.admin && (
                         <>
                             <DropdownMenuItem>
-                                <Link to='/services'>
+                                <Link to='/services' className='w-full'>
                                     Palveluiden hallinta
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Link to='/users'>
+                                <Link to='/users' className='w-full'>
                                     Käyttöoikeuksien hallinta
                                 </Link>
                             </DropdownMenuItem>
@@ -112,10 +112,8 @@ function UserNav() {
                     )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <button onClick={logout}>
-                        Log out
-                    </button>
+                <DropdownMenuItem onClick={logout} className='cursor-pointer' >
+                    Log out
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -129,7 +127,7 @@ function Navbar() {
     if (user) {
         return (
             <header className="flex items-center justify-between px-4 pb-2 pt-4 sm:px-8 sm:py-4">
-                <a href='/' className="relative whitespace-nowrap text-2xl font-bold">
+                <a href='/' className="relative whitespace-nowrap text-2xl font-title font-bold">
                     Intranet{" "}
                     <sup className="absolute left-[calc(100%+.25rem)] top-0 text-xs font-extrabold text-gray-400">
                         [admin]
@@ -144,7 +142,7 @@ function Navbar() {
     }
     return (
         <header className="flex items-center justify-between px-4 pb-2 pt-4 sm:px-8 sm:py-4">
-            <a href={portalUrl} className="relative whitespace-nowrap text-2xl font-bold">
+            <a href={portalUrl} className="relative whitespace-nowrap text-2xl font-title font-bold">
                 Intranet{" "}
                 <sup className="absolute left-[calc(100%+.25rem)] top-0 text-xs font-extrabold text-gray-400">
                     [admin]

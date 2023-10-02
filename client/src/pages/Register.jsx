@@ -7,7 +7,7 @@ import Cookies from 'universal-cookie'
 import userApi from '../api/users'
 import authorizeApi from '../api/authorize'
 import authenticateApi from '../api/authenticate'
-import useStore from '../store'
+import { useStore } from '../store'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -32,19 +32,19 @@ export default function Register() {
     // /register/?domain=test
     console.log('domain url parameter: ', domain)
 
-    if (domain && !publicServices.find(s => s.domain === domain)) return (
-        <div>
-            <br /><br />
-            <h4>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</h4>
-        </div>
-    )
+    if (domain && !publicServices.find(s => s.domain === domain)) {
+        return (
+            <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <p>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</p>
+            </main>
+        )
+    }
 
     if (user) {
         return (
-            <div>
-                <br /><br />
-                <h4>Olet kirjautunut sisään sähköpostilla: {user.email}</h4>
-            </div>
+            <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <p>Olet kirjautunut sisään sähköpostilla: {user.email}</p>
+            </main>
         )
     }
 
@@ -69,15 +69,12 @@ export default function Register() {
         return true
     }
 
-    const registerAndLogin = async event => {
+    const registerAndLogin = async (event) => {
         event.preventDefault()
 
         if (!validate()) return
 
-        const credentials = {
-            password,
-            email
-        }
+        const credentials = { password, email }
 
         try {
             await userApi.create(credentials)
@@ -107,7 +104,7 @@ export default function Register() {
     }
 
     return (
-        <main className='flex flex-col min-h-0 flex-1 gap-3 px-4 py-2'>
+        <main className='flex flex-col min-h-0 flex-1 gap-3 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <div className="flex flex-col grow justify-center items-center">
                 <div className='flex flex-col w-full max-w-xs gap-2'>
                     <h2 className="text-xl">Luo käyttäjä Intranettiin</h2>
