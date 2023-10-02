@@ -12,7 +12,7 @@ axiosRetry(axios, {
 
 const service = '/users'
 const url = apiUrl + service
-
+console.log('url', url)
 const create = async object => commonService.post(object, service)
 const update = async (id, object) => commonService.put(id, object, service)
 const remove = async id => commonService.del(id, service)
