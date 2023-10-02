@@ -90,17 +90,21 @@ authorizeRouter.get('/service/:name/:level', async (req, res, next) => {
     let { name, level } = req.params
     level = parseInt(level)
 
-    if (!user) return res.status(401).json({ error: 'No valid user token.' })
-    
-    const service = await Service.findOne({ name })
-    
-    if (!service) {
-      return res.status(401).json({ error: 'The service does not exist.'})
+    let access = user.access.find(a => a.name === name)
+
+    if (!access) {
+      // In case the service name is not defined in the token.
+      // This can probably be removed eventually.
+      const service = await Service.findOne({ name })
+
+      if (!service) {
+        return res.status(401).json({ error: 'The service does not exist.'})
+      }
+
+      // Find and access entry for the service from the list if it exists.
+      access = user.access.find(a => service._id.equals(a.service))
     }
-    
-    // Find and access entry for the service from the list if it exists.
-    const access = user.access.find(a => service._id.equals(a.service))
-    
+
     if (!access) {
       return res.status(401).json({
         error: 'The user has no access level on this service.'

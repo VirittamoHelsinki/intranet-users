@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   access: [{
+    // Service id.
     service: {
       type: ObjectId,
       ref: 'Service',
@@ -36,6 +37,10 @@ const userSchema = new mongoose.Schema({
     level: {
       type: Number,
       required: true
+    },
+    name: {
+      // Services name so that access can be checked with just the token.
+      type: String
     }
   }]
 })
