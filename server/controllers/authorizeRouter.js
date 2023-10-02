@@ -91,15 +91,15 @@ authorizeRouter.get('/service/:name/:level', async (req, res, next) => {
     level = parseInt(level)
 
     if (!user) return res.status(401).json({ error: 'No valid user token.' })
-
+    
     const service = await Service.findOne({ name })
-
+    
     if (!service) {
       return res.status(401).json({ error: 'The service does not exist.'})
     }
-
+    
     // Find and access entry for the service from the list if it exists.
-    const access = user.access.find(a => a.service.equals(service._id))
+    const access = user.access.find(a => service._id.equals(a.service))
     
     if (!access) {
       return res.status(401).json({

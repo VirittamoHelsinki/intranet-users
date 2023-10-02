@@ -11,9 +11,10 @@ const virittamoEmail = email => {
   return false
 }
 
+// Register a new user.
 userRouter.post('/', async (req, res) => {
   try {
-    let { email, password } = req.body
+    let { email, password, firstname, lastname } = req.body
 
     if (!email)    return res.status(400).json({ error: 'email is missing' })
     if (!password) return res.status(400).json({ error: 'password is missing' })
@@ -32,7 +33,9 @@ userRouter.post('/', async (req, res) => {
 
     const user = new User({
       email,
-      passwordHash
+      passwordHash,
+      firstname,
+      lastname
     })
 
     const savedUser = await user.save()
@@ -110,9 +113,9 @@ userRouter.delete('/:id', async (req, res, next) => {
 userRouter.put('/:id', async (req, res, next) => {
   try {
     const id = req.params.id
-    let { admin, access } = req.body
+    let { admin, access, firstname, lastname } = req.body
     
-    if (!admin && !access) {
+    if (!admin && !access && !firstname && !lastname) {
       return res.status(400).json({ error: 'No valid fields to update.'})
     }
 
@@ -121,7 +124,7 @@ userRouter.put('/:id', async (req, res, next) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { admin, access },
+      { admin, access, firstname, lastname },
       { new: true }
     )
 

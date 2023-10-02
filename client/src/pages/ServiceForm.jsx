@@ -22,6 +22,8 @@ export default function ServiceForm() {
     const [protocol, setProtocol] = useState('https')
     const [serviceKey, setServiceKey] = useState('')
 
+    console.log('rendering ServiceForm')
+
     const [editing, setEditing] = useState(false)
 
     const navigate = useNavigate()
@@ -35,9 +37,10 @@ export default function ServiceForm() {
 
             setName(service.name)
             setDomain(service.domain)
+            setProtocol(service.protocol)
             setServiceKey(service.serviceKey)
         }
-    }, [editing])
+    }, [editing, services.length])
 
     useEffect(() => {
         if (id && id !== 'new') setEditing(true)
@@ -117,6 +120,7 @@ export default function ServiceForm() {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
+<<<<<<< HEAD
                 <RadioGroup defaultValue="https" onValueChange={setProtocol}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="https" id="r2" />
@@ -128,6 +132,27 @@ export default function ServiceForm() {
                         <RadioGroupItem value="http" id="r1" />
                         <Label htmlFor="r1" >
                             http
+=======
+                <RadioGroup value={protocol}>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                            value="http"
+                            id="r1"
+                            onClick={() => setProtocol('http')}
+                        />
+                        <Label htmlFor="r1">
+                            http
+                        </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                            value="https"
+                            id="r2"
+                            onClick={() => setProtocol('https')}
+                        />
+                        <Label htmlFor="r2">
+                            https
+>>>>>>> refs/remotes/origin/master
                         </Label>
                     </div>
                 </RadioGroup>
