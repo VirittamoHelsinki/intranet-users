@@ -59,7 +59,7 @@ export default function Login() {
     if (user) {
         return (
             <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
-                <p>Olet kirjautunut sisään sähköpostilla: {user.email}</p>
+                <p>Olet kirjautunut sisään email: {user.email}</p>
             </main>
         )
     }
