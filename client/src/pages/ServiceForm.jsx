@@ -120,30 +120,7 @@ export default function ServiceForm() {
                         onChange={(event) => setServiceKey(event.target.value)}
                     />
                 </div>
-<<<<<<< HEAD
-                <RadioGroup defaultValue="https" onValueChange={setProtocol}>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="https" id="r2" />
-                        <Label htmlFor="r2">
-                            https
-                        </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="http" id="r1" />
-                        <Label htmlFor="r1" >
-                            http
-=======
                 <RadioGroup value={protocol}>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem
-                            value="http"
-                            id="r1"
-                            onClick={() => setProtocol('http')}
-                        />
-                        <Label htmlFor="r1">
-                            http
-                        </Label>
-                    </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem
                             value="https"
@@ -152,7 +129,16 @@ export default function ServiceForm() {
                         />
                         <Label htmlFor="r2">
                             https
->>>>>>> refs/remotes/origin/master
+                        </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                            value="http"
+                            id="r1"
+                            onClick={() => setProtocol('http')}
+                        />
+                        <Label htmlFor="r1">
+                            http
                         </Label>
                     </div>
                 </RadioGroup>
