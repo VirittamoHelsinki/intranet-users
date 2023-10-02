@@ -9,8 +9,8 @@
     "install:server": "cd server && npm install",
     "install:client": "cd client && npm install",
     "install": "npm run install:server && npm run install:client",
-    "build:dev": "cd server && npm run build:dev",
-    "build:prod": "cd server && npm run build:prod"
+    "build:dev": "cd server && npm run build:dev && rm -rf ../client/build",
+    "build:prod": "cd server && npm run build:prod && rm -rf ../client/build"
   },
   "author": "",
   "license": "ISC"
