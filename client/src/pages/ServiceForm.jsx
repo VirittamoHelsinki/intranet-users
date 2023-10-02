@@ -43,7 +43,7 @@ export default function ServiceForm() {
     }, [editing, services.length])
 
     useEffect(() => {
-        if (id !== 'new') setEditing(true)
+        if (id && id !== 'new') setEditing(true)
     }, [id])
 
 
@@ -122,15 +122,11 @@ export default function ServiceForm() {
                 <RadioGroup value={protocol} onValueChange={setProtocol}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="https" id="r2" />
-                        <Label htmlFor="r2">
-                            https
-                        </Label>
+                        <Label htmlFor="r2">https</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="http" id="r1" />
-                        <Label htmlFor="r1" >
-                            http
-                        </Label>
+                        <Label htmlFor="r1">http</Label>
                     </div>
                 </RadioGroup>
                 <Button type="submit">Tallenna</Button>
