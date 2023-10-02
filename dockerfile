@@ -13,7 +13,7 @@ RUN npm run install
 COPY . .
  
 # Build the React app
-RUN npm run build:dev
+RUN npm run build:prod
 
 COPY . .
 
