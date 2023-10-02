@@ -23,27 +23,16 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://virittamo.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_ec22395c875b4cfb812ebe3341f38303 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_3c68af5504064699807ce04564920fae }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_c5047849571348cab7ecdd20079c6799 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_cf894617db8e483996e491a9909ff5c9 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_ec22395c875b4cfb812ebe3341f38303 }}/virittamo/virittamointranet:${{ github.sha }}
+        tags: virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_c5047849571348cab7ecdd20079c6799 }}/virittamo/virittamointranet:${{ github.sha }}
         file: ./Dockerfile
-    - name: Create .env file in client folder
-      run: |
-          echo "${{ secrets.ENV_FILE_CLIENT }}" > ./client/.env
-      shell: bash
-  
-    - name: Create .env file in server folder
-      run: |
-          echo "${{ secrets.ENV_FILE_SERVER }}" > ./server/.env
-      shell: bash
-  
-    - name: Load .env file
-      run: echo "${{ secrets.ENV_FILE }}" > .env && source .env
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -58,5 +47,5 @@ jobs:
       with:
         app-name: 'portal-virittamo'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_4e70a848d9c04fafaa5fd1c625e8674d }}
-        images: 'virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_ec22395c875b4cfb812ebe3341f38303 }}/virittamo/virittamointranet:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_8eceef72c1254295944c43f27729aacb }}
+        images: 'virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_c5047849571348cab7ecdd20079c6799 }}/virittamo/virittamointranet:${{ github.sha }}'
