@@ -14,7 +14,7 @@ import Users from './pages/Users'
 
 import authorizeApi from './api/authorize'
 import serviceApi from './api/services'
-import { useStore } from './store'
+import { useStore } from './utils/store'
 import { portalUrl } from './config'
 
 import {
@@ -27,7 +27,7 @@ import {
     DropdownMenuTrigger
 } from './components/ui/dropdown-menu'
 
-import { Moon, Sun } from "lucide-react"
+import { ChevronDownIcon, Moon, Sun } from "lucide-react"
 
 import { Button } from "./components/ui/button"
 import { useTheme } from "./components/theme-provider"
@@ -76,14 +76,17 @@ function UserNav() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <p className='text-xl cursor-pointer'>
-                    {user.email.substring(0, user.email.lastIndexOf("@"))}
-                </p>
+                <Button variant='link' className='items-end gap-2'>
+                    <p className='text-xl capitalize'>
+                        {user.email.substring(0, user.email.lastIndexOf("@")).split('.').join(' ')}
+                    </p>
+                    <ChevronDownIcon className='w-6 h-6' />
+                </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.email.substring(0, user.email.lastIndexOf("@"))}</p>
+                        <p className="text-sm font-medium leading-none capitalize">{user.email.substring(0, user.email.lastIndexOf("@")).split('.').join(' ')}</p>
                         <p className="text-xs leading-none text-muted-foreground">
                             {user?.email}
                         </p>
@@ -113,7 +116,7 @@ function UserNav() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className='cursor-pointer' >
-                    Log out
+                    Kirjaudu ulos
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -121,21 +124,21 @@ function UserNav() {
 }
 
 function Navbar() {
+    const user = useStore((state) => state.user)
     const { pathname } = useLocation()
-    const { user } = useStore()
 
     if (user) {
         return (
             <header className="flex items-center justify-between px-4 pb-2 pt-4 sm:px-8 sm:py-4">
                 <a href='/' className="relative whitespace-nowrap text-2xl font-title font-bold">
-                    Intranet{" "}
+                    Virrittämö{" "}
                     <sup className="absolute left-[calc(100%+.25rem)] top-0 text-xs font-extrabold text-gray-400">
-                        [admin]
+                        [portaali]
                     </sup>
                 </a>
                 <nav className='flex items-center gap-5'>
-                    <UserNav />
                     <ModeToggle />
+                    <UserNav />
                 </nav>
             </header>
         )
@@ -143,14 +146,14 @@ function Navbar() {
     return (
         <header className="flex items-center justify-between px-4 pb-2 pt-4 sm:px-8 sm:py-4">
             <a href={portalUrl} className="relative whitespace-nowrap text-2xl font-title font-bold">
-                Intranet{" "}
+                Virittämö{" "}
                 <sup className="absolute left-[calc(100%+.25rem)] top-0 text-xs font-extrabold text-gray-400">
-                    [admin]
+                    [portaali]
                 </sup>
             </a>
             <nav className='flex items-center gap-3'>
-                {pathname === '/register' ? <Link to="/">Kirjaudu sisään</Link> : <Link to="/register">Rekisteröidy</Link>}
                 <ModeToggle />
+                {pathname === '/register' ? <Link to="/">Kirjaudu sisään</Link> : <Link to="/register">Rekisteröidy</Link>}
             </nav>
         </header>
     )
@@ -176,31 +179,27 @@ export default function Navigator() {
     }, [])
 
     return (
-        <div className='flex min-h-0 flex-1 flex-col'>
-            <Router>
-                <Navbar />
-                <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/:domain" element={<Login />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/login/:domain" element={<Login />} />
+        <Router>
+            <Navbar />
+            <Routes>
+                <Route path="/" element={<Login />} />
+                <Route path="/:domain" element={<Login />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/login/:domain" element={<Login />} />
 
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/register/:domain" element={<Register />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/register/:domain" element={<Register />} />
 
-                    <Route path="/resetpassword" element={<Reset />} />
+                <Route path="/resetpassword" element={<Reset />} />
 
-                    <Route path="/profile" element={<Profile />} />
+                <Route path="/profile" element={<Profile />} />
 
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/services/:id" element={<ServiceForm />} />
-                    <Route path="/services/add" element={<ServiceForm />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/services/:id" element={<ServiceForm />} />
+                <Route path="/services/add" element={<ServiceForm />} />
 
-                    <Route path="/users" element={<Users />} />
-
-                </Routes>
-
-            </Router>
-        </div >
+                <Route path="/users" element={<Users />} />
+            </Routes>
+        </Router>
     )
 }

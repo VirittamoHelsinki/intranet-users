@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import resetApi from '../api/reset'
-import { useStore } from '../store'
+import { useStore } from '../utils/store'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'

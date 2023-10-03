@@ -79,9 +79,9 @@ body {
   font-family: "Inter";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply relative flex h-screen w-screen flex-col justify-between;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+#root {
+  @apply flex min-h-0 flex-1 flex-col;
 }

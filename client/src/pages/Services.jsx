@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import servicesApi from '../api/services'
-import { useStore } from '../store'
+import { useStore } from '../utils/store'
 import { Button } from '../components/ui/button'
-import { ClipboardCopy, ClipboardX, EyeIcon, EyeOffIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react'
+import { EyeIcon, EyeOffIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu'
 
@@ -53,44 +53,35 @@ function CopyToClip({ service }) {
         navigator.clipboard.writeText(key);
         setTimeout(() => setCopy(false), 1000);
     };
+
     return (
-        <Button
-            className="-m-2 !p-2"
-            onClick={() => copyUrlToClipboard(service.serviceKey)}
-            variant="ghost"
-        >
-            {copy ? (
-                <ClipboardX className="h-5 w-5 opacity-70" />
+        <>
+            {service.showServiceKey ? (
+                <button className='max-w-[100px] whitespace-nowrap' onClick={() => copyUrlToClipboard(service.serviceKey)} >
+                    <p>{copy ? 'kopioitu' : service.serviceKey}</p>
+                </button>
             ) : (
-                <ClipboardCopy className='h-5 w-5' />
+                <button className='' onClick={() => copyUrlToClipboard(service.serviceKey)} >
+                    <p>{copy ? 'kopioitu' : '********'}</p>
+                </button>
             )}
-            <span className="sr-only">kopio avain</span>
-        </Button>
+        </>
     );
 }
 
 function ServiceItems() {
-    const {
-        services,
-        setServices
-    } = useStore()
-    const [copy, setCopy] = useState(false);
-    const copyUrlToClipboard = (key) => {
-        setCopy(true);
-        navigator.clipboard.writeText(key);
-        setTimeout(() => setCopy(false), 1000);
-    };
+    const services = useStore((state) => state.services)
+    const setServices = useStore((state) => state.setServices)
 
     const showOrHideServiceKey = (service) => {
         service.showServiceKey = !service.showServiceKey
 
         setServices(services)
     }
-
     if (!services || services.length === 0) {
         return (
             <TableRow>
-                <TableCell>0 Palvelua</TableCell>
+                <TableCell>0 Sovellusta</TableCell>
             </TableRow>
         )
     }
@@ -103,17 +94,12 @@ function ServiceItems() {
                     <TableCell>{service.protocol}</TableCell>
                     <TableCell>{service.domain}</TableCell>
                     <TableCell className='overflow-hidden'>
-                        {service.showServiceKey ? (
-                            <button className='max-w-[100px]' onClick={() => copyUrlToClipboard(service.serviceKey)} >
-                                <p>{copy ? 'kopioitu' : service.serviceKey}</p>
-                            </button>
-                        ) : <p>********</p>}
+                        <CopyToClip service={service} />
                     </TableCell>
                     <TableCell className='flex gap-5'>
                         <Button variant='ghost' className="p-2" onClick={() => showOrHideServiceKey(service)}>
                             {service.showServiceKey ? <EyeOffIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
                         </Button>
-                        {/*<CopyToClip service={service} />*/}
                     </TableCell>
                     <TableCell>
                         <MoreOptions service={service} />
@@ -149,12 +135,14 @@ export default function Services() {
         getServices()
     }, [user])
 
-    if (!user || !user.admin) return (
-        <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
-            <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
-            <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
-        </main>
-    )
+    if (!user || !user.admin) {
+        return (
+            <main className='flex flex-col grow justify-center items-center gap-2 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <h2 className='text-3xl'>Vain järjestelmänvalvojilla on oikeus käyttää tätä sivua.</h2>
+                <Link to='/' className='opacity-70 hover:opacity-100 hover:underline'>Mene takasin etusivulle</Link>
+            </main>
+        )
+    }
 
     return (
         <main className='flex flex-col justify-center items-center px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
