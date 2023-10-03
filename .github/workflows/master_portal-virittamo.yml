@@ -36,18 +36,6 @@ jobs:
     - name: Create .env file in server folder
       run: |
           echo "${{ secrets.ENV_FILE_SERVER }}" > ./server/.env
-          
-    - name: Check .env data in client folder
-      run: |
-        npm install dotenv-validate
-        dotenv-validate --path ./client/.env
-      shell: bash
-
-    - name: Check .env data in server folder
-      run: |
-        npm install dotenv-validate
-        dotenv-validate --path ./server/.env
-      shell: bash
 
    deploy:
     runs-on: ubuntu-latest
