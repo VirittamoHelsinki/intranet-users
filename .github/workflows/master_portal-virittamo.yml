@@ -36,10 +36,7 @@ jobs:
     - name: Create .env file in server folder
       run: |
           echo "${{ secrets.ENV_FILE_SERVER }}" > ./server/.env
-<<<<<<< HEAD
-
-=======
->>>>>>> 50c5cd5c917904608c9f7547edb25c42960fcb8f
+          
    deploy:
     runs-on: ubuntu-latest
     needs: build
