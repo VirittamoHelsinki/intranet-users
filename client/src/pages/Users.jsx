@@ -56,6 +56,7 @@ function SetAccessLevel({ user }) {
             else {
                 user.access.push({
                     service: service._id,
+                    name: service.name,
                     level: accessLevel
                 })
             }
