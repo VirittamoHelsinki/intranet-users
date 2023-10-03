@@ -1,4 +1,4 @@
-import { useStore } from '../store'
+import { useStore } from '../utils/store'
 
 export default function Profile() {
     const user = useStore((state) => state.user)

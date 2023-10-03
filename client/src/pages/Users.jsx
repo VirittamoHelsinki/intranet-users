@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import servicesApi from '../api/services'
 import usersApi from '../api/users'
-import { useStore } from '../store'
+import { useStore } from '../utils/store'
 import {
     Table,
     TableBody,
@@ -85,7 +85,7 @@ function SetAccessLevel({ user }) {
                         id="name"
                         className="col-span-3"
                         value={accessLevel}
-                        onChange={event => setAccessLevel(Number(event.target.value))}
+                        onChange={(event) => setAccessLevel(Number(event.target.value))}
                     />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -93,7 +93,7 @@ function SetAccessLevel({ user }) {
                         onValueChange={(value) =>
                             setService(services.find(s => s._id === value))
                         }>
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-52">
                             <SelectValue placeholder="Valitse Palvelu" />
                         </SelectTrigger>
                         <SelectContent>
@@ -173,23 +173,23 @@ export default function Users() {
         setServices
     } = useStore()
 
-    const loadUsers = async () => {
+    const loadUsers = useCallback(async () => {
         if (user && user.admin) {
             try {
                 setUsers(await usersApi.getAll())
 
             } catch (exception) { console.log('exception: ', exception) }
         }
-    }
+    }, [user])
 
-    const loadServices = async () => {
+    const loadServices = useCallback(async () => {
         if (user && user.admin) {
             try {
                 setServices(await servicesApi.getAll())
 
             } catch (exception) { console.log('exception: ', exception) }
         }
-    }
+    }, [user])
 
     useEffect(() => {
         loadUsers()

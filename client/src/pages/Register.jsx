@@ -1,13 +1,11 @@
-// node imports
 import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Cookies from 'universal-cookie'
 
-// file imports
 import userApi from '../api/users'
 import authorizeApi from '../api/authorize'
 import authenticateApi from '../api/authenticate'
-import { useStore } from '../store'
+import { useStore } from '../utils/store'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'

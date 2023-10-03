@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie'
 import authenticateApi from '../api/authenticate'
 import authorizeApi from '../api/authorize'
 
-import { useStore } from '../store'
+import { useStore } from '../utils/store'
 import { Label } from '../components/ui/label'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
@@ -50,11 +50,13 @@ export default function Login() {
         window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`
     }
 
-    if (domain && !publicServices.find(s => s.domain === domain)) return (
-        <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
-            <p>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</p>
-        </main>
-    )
+    if (domain && !publicServices.find((s) => s.domain === domain)) {
+        return (
+            <main className='px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
+                <p>URL kentän domain parametrin arvo ei sisällä mitään sallituista sivuista.</p>
+            </main>
+        )
+    }
 
     if (user) {
         return (
@@ -114,38 +116,38 @@ export default function Login() {
 
     return (
         <main className='flex flex-col grow justify-center items-center gap-3 px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
-                <div className='flex flex-col w-full max-w-xs gap-2'>
-                    <h2 className="text-xl">Kirjaudu Sisään Intranettiin</h2>
-                    <p className="text-xs opacity-70">
-                        Muista käyttää etunimi.sukunimi@edu.hel.fi sähköpostia
-                    </p>
-                    <form onSubmit={loginButton} className='flex flex-col gap-4'>
-                        <div className=''>
-                            <Label htmlFor='email'>Sähköposti</Label>
-                            <Input
-                                id='email'
-                                type="text"
-                                value={email}
-                                onChange={event => setEmail(event.target.value)}
-                            />
-                        </div>
-                        <div className=''>
-                            <Label htmlFor='password'>Salasana</Label>
-                            <Input
-                                id='password'
-                                type="password"
-                                value={password}
-                                onChange={event => setPassword(event.target.value)}
-                            />
-                        </div>
-                        <Button type="submit">Kirjaudu sisään</Button>
-                    </form>
-                    <div className='flex flex-col pt-3'>
-                        <Link to="/resetpassword" href="" className="loginLink">
-                            Unohditko salasanan?
-                        </Link>
+            <div className='flex flex-col w-full max-w-xs gap-2'>
+                <h2 className="text-xl">Kirjaudu Sisään Intranettiin</h2>
+                <p className="text-xs opacity-70">
+                    Muista käyttää etunimi.sukunimi@edu.hel.fi sähköpostia
+                </p>
+                <form onSubmit={loginButton} className='flex flex-col gap-4'>
+                    <div className=''>
+                        <Label htmlFor='email'>Sähköposti</Label>
+                        <Input
+                            id='email'
+                            type="text"
+                            value={email}
+                            onChange={event => setEmail(event.target.value)}
+                        />
                     </div>
+                    <div className=''>
+                        <Label htmlFor='password'>Salasana</Label>
+                        <Input
+                            id='password'
+                            type="password"
+                            value={password}
+                            onChange={event => setPassword(event.target.value)}
+                        />
+                    </div>
+                    <Button type="submit">Kirjaudu sisään</Button>
+                </form>
+                <div className='flex flex-col pt-3'>
+                    <Link to="/resetpassword" className="loginLink">
+                        Unohditko salasanan?
+                    </Link>
                 </div>
+            </div>
         </main>
     )
 }

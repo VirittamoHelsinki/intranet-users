@@ -1,16 +1,13 @@
 import { useEffect } from 'react'
 import Cookies from 'universal-cookie'
 
-import authorizeApi from './api/authorize'
-import userApi from './api/users'
+import authorizeApi from '../api/authorize'
+import userApi from '../api/users'
 import { useStore } from './store'
 
 export function CookieTracker() {
     const { setUser } = useStore()
 
-    useEffect(() => {
-        loadCookies()
-    }, [])
 
     const loadCookies = async () => {
         const cookies = new Cookies()
@@ -31,6 +28,9 @@ export function CookieTracker() {
             }
         }
     }
+    useEffect(() => {
+        loadCookies()
+    }, [])
 
     return null
 }
