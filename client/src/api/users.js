@@ -13,7 +13,12 @@ axiosRetry(axios, {
 const service = '/users'
 const url = apiUrl + service
 
-const create = async object => commonService.post(object, service)
+//const create = async object => commonService.post(object, service)
+const create = async object => {
+  const response = await axios.post("https://portal-virittamo.azurewebsites.net/api", object, config())
+  return response.data
+}
+
 const update = async (id, object) => commonService.put(id, object, service)
 const remove = async id => commonService.del(id, service)
 
