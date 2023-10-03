@@ -25,10 +25,8 @@ export default function Register() {
 
     const [searchParams] = useSearchParams()
 
-    const domain = searchParams.get("domain")
-
     // /register/?domain=test
-    console.log('domain url parameter: ', domain)
+    const domain = searchParams.get("domain")
 
     if (domain && !publicServices.find(s => s.domain === domain)) {
         return (
