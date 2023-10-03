@@ -18,7 +18,7 @@ export default function Reset() {
         </main>
     )
 
-    const resetPassword = async event => {
+    const resetPassword = async (event) => {
         event.preventDefault()
         console.log('Resetting password for: ' + email)
         const message = await resetApi.reset({ email })
@@ -40,7 +40,7 @@ export default function Reset() {
                         <Input
                             type="text"
                             value={email}
-                            onChange={event => setEmail(event.target.value)}
+                            onChange={(event) => setEmail(event.target.value)}
                             className="textInput"
                         />
                     </div>

@@ -7,7 +7,6 @@ import Cookies from 'universal-cookie'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Reset from './pages/Reset'
-import Profile from './pages/Profile'
 import Services from './pages/Services'
 import ServiceForm from './pages/ServiceForm'
 import Users from './pages/Users'
@@ -27,7 +26,7 @@ import {
     DropdownMenuTrigger
 } from './components/ui/dropdown-menu'
 
-import { ChevronDownIcon, Moon, Sun } from "lucide-react"
+import { ChevronDownIcon, Monitor, Moon, Shield, Sun } from "lucide-react"
 
 import { Button } from "./components/ui/button"
 import { useTheme } from "./components/theme-provider"
@@ -65,6 +64,7 @@ function UserNav() {
         user,
         setUser,
     } = useStore()
+    const { setTheme } = useTheme()
 
     // Run when the logout button is pressed.
     const logout = async () => {
@@ -84,23 +84,19 @@ function UserNav() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
+                <DropdownMenuLabel className="flex items-center justify-between font-normal">
+                    <div className="flex flex-col gap-y-1">
                         <p className="text-sm font-medium leading-none capitalize">{user.email.substring(0, user.email.lastIndexOf("@")).split('.').join(' ')}</p>
                         <p className="text-xs leading-none text-muted-foreground">
                             {user?.email}
                         </p>
                     </div>
+                    {user.admin && <Shield className='w-5 h-5' />}
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem className='p-0'>
-                        <Link to='/profile' className='w-full py-1.5 px-2'>
-                            Käyttäjän tiedot
-                        </Link>
-                    </DropdownMenuItem>
-                    {user?.admin && (
-                        <>
+                {user?.admin && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
                             <DropdownMenuItem className='p-0'>
                                 <Link to='/services' className='w-full py-1.5 px-2'>
                                     Palveluiden hallinta
@@ -111,9 +107,9 @@ function UserNav() {
                                     Käyttöoikeuksien hallinta
                                 </Link>
                             </DropdownMenuItem>
-                        </>
-                    )}
-                </DropdownMenuGroup>
+                        </DropdownMenuGroup>
+                    </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className='cursor-pointer' >
                     Kirjaudu ulos
@@ -191,8 +187,6 @@ export default function Navigator() {
                 <Route path="/register/:domain" element={<Register />} />
 
                 <Route path="/resetpassword" element={<Reset />} />
-
-                <Route path="/profile" element={<Profile />} />
 
                 <Route path="/services" element={<Services />} />
                 <Route path="/services/:id" element={<ServiceForm />} />

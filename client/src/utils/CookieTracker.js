@@ -8,7 +8,6 @@ import { useStore } from './store'
 export function CookieTracker() {
     const { setUser } = useStore()
 
-
     const loadCookies = async () => {
         const cookies = new Cookies()
         const usersToken = cookies.get('usersToken')

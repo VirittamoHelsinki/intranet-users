@@ -29,7 +29,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "../components/ui/dialog"
-import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import {
     Select,
@@ -41,6 +40,12 @@ import {
     SelectValue,
 } from "../components/ui/select"
 import { Link } from 'react-router-dom'
+
+const accessLevels = [
+    { role: 'user', accessLevel: 1 },
+    { role: 'content editor', accessLevel: 2 },
+    { role: 'admin', accessLevel: 3 }
+]
 
 function SetAccessLevel({ user }) {
     const { services, users, setUsers } = useStore()
@@ -69,36 +74,45 @@ function SetAccessLevel({ user }) {
     }
 
     return (
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-                <DialogTitle>Määritä Käyttöoikeustaso</DialogTitle>
+                <DialogTitle>Määritä käytäjäkohtaiset Käyttöoikeudet sovelluksiin</DialogTitle>
                 <DialogDescription>
                     Tee muutoksia käyttäjän käyttöoikeuksiin. Paina Tallenna, kun olet valmis.
                 </DialogDescription>
             </DialogHeader>
             <div className="flex items-end gap-4 py-4">
-                <div className="flex flex-col gap-2">
+                <div className='flex flex-col gap-2'>
                     <Label htmlFor="kayttooikeustaso" className="">
                         Käyttöoikeustaso
                     </Label>
-                    <Input
-                        id="name"
-                        className="col-span-3"
-                        value={accessLevel}
-                        onChange={(event) => setAccessLevel(Number(event.target.value))}
-                    />
+
+                    <Select onValueChange={(value) => setAccessLevel(value)}>
+                        <SelectTrigger className="w-52">
+                            <SelectValue placeholder="Valitse käyttötaso" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>käyttötaso</SelectLabel>
+                                {accessLevels.map((access) => <SelectItem key={access.accessLevel} value={access.accessLevel}>{access.role}</SelectItem>)}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="flex flex-col gap-2">
+                    <Label htmlFor="kayttooikeustaso" className="">
+                        Sovellus
+                    </Label>
                     <Select
                         onValueChange={(value) =>
                             setService(services.find(s => s._id === value))
                         }>
                         <SelectTrigger className="w-52">
-                            <SelectValue placeholder="Valitse Palvelu" />
+                            <SelectValue placeholder="Valitse sovellus" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Palvelut</SelectLabel>
+                                <SelectLabel>Sovellus</SelectLabel>
                                 {services.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)}
                             </SelectGroup>
                         </SelectContent>
@@ -106,6 +120,9 @@ function SetAccessLevel({ user }) {
                 </div>
             </div>
             <DialogFooter>
+                <Button variant='destructive' onClick={() => console.log('poista')}>
+                    Poista
+                </Button>
                 <Button variant='default' onClick={uploadAccessLevel}>
                     Tallenna
                 </Button>
@@ -208,7 +225,7 @@ export default function Users() {
     return (
         <main className='flex flex-col justify-center items-center px-4 pb-2 pt-4 sm:px-8 sm:py-4'>
             <div className='flex flex-col items-start w-full max-w-5xl gap-2'>
-                <h2 className='text-3xl font-bold'>Intranetin Käyttöoikeuksien Hallinta</h2>
+                <h2 className='text-3xl font-bold'>Virittämö portaalin Käyttöoikeuksien Hallinta</h2>
                 <p className='opacity-70'>
                     Tällä sivulla järjestelmänvalvoja voi muokata käyttäjien palvelukohtaisia
                     käyttöoikeuksia. Käyttöoikeuksien muutokset tulevat voimaan kun käyttäjä
@@ -235,11 +252,13 @@ export default function Users() {
                                         {u.access.map((a) => {
                                             const service = services.find(s => s._id === a.service)
 
+                                            const access = accessLevels.find((level) => level.accessLevel === a.level)
+
                                             if (!service) return null
 
                                             return (
                                                 <li key={a.service + u._id}>
-                                                    {service.name}: {a.level}
+                                                    {service.name}: {access?.role}
                                                 </li>
                                             )
                                         })}
