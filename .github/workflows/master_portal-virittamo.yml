@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy container app to Azure Web App - portal-virittamo
 
 on:
@@ -10,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+   build:
     runs-on: 'ubuntu-latest'
 
     steps:
@@ -35,22 +32,12 @@ jobs:
     - name: Create .env file in client folder
       run: |
           echo "${{ secrets.ENV_FILE_CLIENT }}" > ./client/.env
-      shell: bash
-
-    - name: Display client .env file
-      run: cat client/.env
-      working-directory: client
       
     - name: Create .env file in server folder
       run: |
           echo "${{ secrets.ENV_FILE_SERVER }}" > ./server/.env
-      shell: bash
-      
-    - name: Display server .env file
-      run: cat server/.env
-      working-directory: server
 
-  deploy:
+   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -58,11 +45,13 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+    - name: Load .env files into application environment
+      run: dotenv config
     - name: Deploy to Azure Web App
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'portal-virittamo'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_4e70a848d9c04fafaa5fd1c625e8674d }}
-        images: 'virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_ec22395c875b4cfb812ebe3341f38303 }}/virittamo/virittamointranet:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_8eceef72c1254295944c43f27729aacb }}
+        images: 'virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_c5047849571348cab7ecdd20079c6799 }}/virittamo/virittamointranet:${{ github.sha }}'
