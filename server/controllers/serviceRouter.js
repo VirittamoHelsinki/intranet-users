@@ -43,12 +43,16 @@ serviceRouter.get('/', async (req, res, next) => {
 // An admin user can add a new domain to the system.
 serviceRouter.post('/', async (req, res, next) => {
     try {
-        const { name, domain, protocol, serviceKey } = req.body
+        let { name, domain, protocol, serviceKey } = req.body
 
         if (!name)      return res.status(400).json({ error: 'name is missing' })
         if (!domain)    return res.status(400).json({ error: 'domain is missing' })
         if (!protocol)  return res.status(400).json({ error: 'protocol is missing' })
         if (!serviceKey) return res.status(400).json({ error: 'serviceKey is missing' })
+
+        name = name.toLowerCase()
+        domain = domain.toLowerCase()
+        protocol = protocol.toLowerCase()
 
         const service = new Service({
             name,
@@ -85,11 +89,15 @@ serviceRouter.delete('/:id', async (req, res, next) => {
 serviceRouter.put('/:id', async (req, res, next) => {
     try {
         const { id } = req.params
-        const { name, domain, protocol, serviceKey } = req.body
+        let { name, domain, protocol, serviceKey } = req.body
 
         if (!name && !domain && !protocol && !serviceKey) {
             return res.status(400).json({ error: 'no fields provided for editing.' })
         }
+
+        if (name)     name     = name.toLowerCase()
+        if (domain)   domain   = domain.toLowerCase()
+        if (protocol) protocol = protocol.toLowerCase()
 
         // update the service.
         const updatedService = await Service.findByIdAndUpdate(id, {
