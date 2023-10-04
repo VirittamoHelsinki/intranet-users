@@ -32,6 +32,13 @@ jobs:
         push: true
         tags: virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_0a447cd89cfe4ca6ab2d3a269cbc3404 }}/virittamo/virittamointranet:${{ github.sha }}
         file: ./Dockerfile
+    - name: Create .env file in client folder
+      run: |
+          echo "${{ secrets.ENV_FILE_CLIENT }}" > ./client/.env
+      
+    - name: Create .env file in server folder
+      run: |
+          echo "${{ secrets.ENV_FILE_SERVER }}" > ./server/.env
 
   deploy:
     runs-on: ubuntu-latest
