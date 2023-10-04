@@ -23,14 +23,14 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://virittamo.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_e397be1fc00f4d338eb0d89496b724ab }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_1a31cdeda9de4cf6b5b921922036bbe7 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_f54e3afda07f4e47911caf19e69f4dfe }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_48aaf3ba52fd4e368cd1e34ce218c54a }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_e397be1fc00f4d338eb0d89496b724ab }}/virittamo/virittamointranet:${{ github.sha }}
+        tags: virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_f54e3afda07f4e47911caf19e69f4dfe }}/virittamo/virittamointranet:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'portal-virittamo'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_f9d9042fb6614409bf0702128966722d }}
-        images: 'virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_e397be1fc00f4d338eb0d89496b724ab }}/virittamo/virittamointranet:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_ac583bbb883f417d8157c1702d3ab708 }}
+        images: 'virittamo.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_f54e3afda07f4e47911caf19e69f4dfe }}/virittamo/virittamointranet:${{ github.sha }}'
