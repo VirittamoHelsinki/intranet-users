@@ -1,6 +1,6 @@
 const environment = import.meta.env.MODE
 
-console.log("here are all the frontside environment: ", import.meta.env, import.meta.env.VITE_API_URL_DEV)
+console.log("here are all the frontside environment: ", import.meta.env)
 
 // Development mode configuration (default)
 let apiUrl =  import.meta.env.VITE_API_URL_DEV
