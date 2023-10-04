@@ -1,25 +1,24 @@
-import axios from 'axios'
-import axiosRetry from 'axios-retry'
-import { apiUrl } from '../config'
-
+import axios from "axios";
+import axiosRetry from "axios-retry";
+import { apiUrl } from "../config";
 
 axiosRetry(axios, {
   retries: 5,
-  retryDelay: axiosRetry.exponentialDelay
-})
+  retryDelay: axiosRetry.exponentialDelay,
+});
 
-const url = `${apiUrl}/authenticate`
+const url = `${apiUrl}/authenticate`;
 
-const authenticate = async credentials => {
-  const response = await axios.post(url, credentials)
+const authenticate = async (credentials) => {
+  const response = await axios.post(url, credentials);
 
-  return response.data
-}
+  return response.data;
+};
 
 const authenticateForService = async (credentials, domain) => {
-  const response = await axios.post(`${url}/${domain}`, credentials)
+  const response = await axios.post(`${url}/${domain}`, credentials);
 
-  return response.data
-}
+  return response.data;
+};
 
-export default { authenticate, authenticateForService }
+export default { authenticate, authenticateForService };

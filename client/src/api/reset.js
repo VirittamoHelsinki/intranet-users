@@ -1,29 +1,28 @@
-import axios from 'axios'
-import axiosRetry from 'axios-retry'
+import axios from "axios";
+import axiosRetry from "axios-retry";
 
-import { apiUrl } from '../config'
+import { apiUrl } from "../config";
 
 axiosRetry(axios, {
   retries: 5,
-  retryDelay: axiosRetry.exponentialDelay
-})
+  retryDelay: axiosRetry.exponentialDelay,
+});
 
 const reset = async (user) => {
-
   try {
-    console.log('Trying reset service for: ', user)
-    const response = await axios.post(`${apiUrl}/reset`, user)
+    console.log("Trying reset service for: ", user);
+    const response = await axios.post(`${apiUrl}/reset`, user);
 
-    console.log('Reset succeeded : ' + response.data )
+    console.log("Reset succeeded : " + response.data);
 
-    return response.data
-  } catch (exception){
-    console.log(exception._message)
+    return response.data;
+  } catch (exception) {
+    console.log(exception._message);
 
-    console.log('reset service failed : ' + exception )
+    console.log("reset service failed : " + exception);
 
-    return ({ error: 'Reset failed' })
+    return { error: "Reset failed" };
   }
-}
+};
 
-export default { reset }
+export default { reset };

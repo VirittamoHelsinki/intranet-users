@@ -74,9 +74,9 @@ function SetAccessLevel({ user }) {
     }
 
     return (
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-md">
             <DialogHeader>
-                <DialogTitle>Määritä käytäjäkohtaiset Käyttöoikeudet sovelluksiin</DialogTitle>
+                <DialogTitle className=''>Määritä käytäjäkohtaiset Käyttöoikeudet sovelluksiin</DialogTitle>
                 <DialogDescription>
                     Tee muutoksia käyttäjän käyttöoikeuksiin. Paina Tallenna, kun olet valmis.
                 </DialogDescription>
@@ -88,7 +88,7 @@ function SetAccessLevel({ user }) {
                     </Label>
 
                     <Select onValueChange={(value) => setAccessLevel(value)}>
-                        <SelectTrigger className="w-52">
+                        <SelectTrigger className="w-44">
                             <SelectValue placeholder="Valitse käyttötaso" />
                         </SelectTrigger>
                         <SelectContent>
