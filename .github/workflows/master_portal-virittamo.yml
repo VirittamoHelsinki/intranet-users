@@ -17,5 +17,5 @@ jobs:
           with: 
             context: .
             push: true
-            tags: virittamoportal
+            tags: virittamoportaali123
       
