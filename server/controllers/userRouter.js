@@ -1,8 +1,8 @@
 const userRouter = require('express').Router()
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
-const {
-  requireAuthorization, userIsAdmin } = require('../middleware/authorize')
+const { requireAuthorization, userIsAdmin } = require('../middleware/authorize')
+const { environment } = require('../config.js')
 
 const virittamoEmail = email => {
   if (email.endsWith('@edu.hel.fi')) return true
@@ -21,8 +21,8 @@ userRouter.post('/', async (req, res) => {
 
     email = email.toLowerCase()
 
-    // Check if the email is a valid for virittamo.
-    // if (!virittamoEmail(email)) {
+    // When in production mode, check if the email is valid for virittamo.
+    // if (environment === 'production' && !virittamoEmail(email)) {
     //   return res.status(400).json({
     //     error: 'email must end with @edu.hel.fi or @hel.fi'
     //   })
