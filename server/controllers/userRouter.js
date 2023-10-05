@@ -11,6 +11,26 @@ const virittamoEmail = email => {
   return false
 }
 
+// Validate password, to contain at least one number, one lowercase letter,
+// one uppercase letter and to be at least 10 characters long.
+const validatePassword = password => {
+  let valid = password.length >= 10
+
+  if (valid) valid = /\d/.test(password)
+
+  if (valid) valid = /[a-z]/.test(password)
+                  || /å/.test(password)
+                  || /ä/.test(password)
+                  || /ö/.test(password)
+
+  if (valid) valid = /[A-Z]/.test(password)
+                  || /Å/.test(password)
+                  || /Ä/.test(password)
+                  || /Ö/.test(password)
+
+  return valid
+}
+
 // Register a new user.
 userRouter.post('/', async (req, res) => {
   try {
@@ -25,6 +45,12 @@ userRouter.post('/', async (req, res) => {
     // if (environment === 'production' && !virittamoEmail(email)) {
     //   return res.status(400).json({
     //     error: 'email must end with @edu.hel.fi or @hel.fi'
+    //   })
+    // }
+
+    // if(!validatePassword(password)) {
+    //   return res.status(400).json({
+    //     error: 'password must be at least 10 characters long and contain at least one number, one lowercase letter and one uppercase letter.'
     //   })
     // }
 
