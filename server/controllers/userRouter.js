@@ -1,5 +1,6 @@
 const userRouter = require('express').Router()
 const User = require('../models/user')
+const Service = require('../models/service')
 const bcrypt = require('bcrypt')
 const { requireAuthorization, userIsAdmin } = require('../middleware/authorize')
 const { environment } = require('../config.js')
@@ -29,6 +30,19 @@ const validatePassword = password => {
                   || /Ö/.test(password)
 
   return valid
+}
+
+const addAccessLevel = async (user, level) => {
+  try {
+    const services = await Service.find({})
+
+    user.access = services.map(service => ({
+      service: service._id,
+      level,
+      name: service.name
+    }))
+
+  } catch (exception) { next(exception) }
 }
 
 // Register a new user.
@@ -61,8 +75,12 @@ userRouter.post('/', async (req, res) => {
       email,
       passwordHash,
       firstname,
-      lastname
+      lastname,
+      access: []
     })
+
+    // Add access level 1 by default to all services.
+    await addAccessLevel(user, 1)
 
     const savedUser = await user.save()
 

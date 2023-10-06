@@ -15,9 +15,9 @@ const { requireAuthorization, userIsAdmin } = require('../middleware/authorize')
 // Get all public information about the services.
 serviceRouter.get('/public', async (req, res, next) => {
     try {
-        const domains = await Service.find({})
+        const services = await Service.find({})
         
-        res.json(domains.map(Service.format))
+        res.json(services.map(Service.format))
     
     } catch (exception) { next(exception) }
 })
