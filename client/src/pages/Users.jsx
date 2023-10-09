@@ -19,7 +19,7 @@ import {
     DropdownMenuTrigger
 } from '../components/ui/dropdown-menu'
 import { Button } from '../components/ui/button'
-import { MoreHorizontalIcon } from 'lucide-react'
+import { MoreHorizontalIcon, Plus, Trash2 } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -40,6 +40,16 @@ import {
     SelectValue,
 } from "../components/ui/select"
 import { Link } from 'react-router-dom'
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "../components/ui/form"
+import { useFieldArray, useForm } from 'react-hook-form'
 
 const accessLevels = [
     { role: 'user', accessLevel: 1 },
@@ -53,9 +63,21 @@ function SetAccessLevel({ user }) {
     const [accessLevel, setAccessLevel] = useState(1)
     const [service, setService] = useState(services[0])
 
+    const form = useForm({
+        defaultValues: {
+            user: [{ accesslevel: 1, app: 'tyoaikaleimaus-palvelu' }]
+        },
+        mode: 'onChange'
+    })
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "user"
+    });
+    const onSubmit = (data) => console.log(data)
+
     const uploadAccessLevel = async () => {
         try {
-            const access = user.access.find(a => a.service === service._id)
+            const access = user.access.find((a) => a.service === service._id)
 
             if (access) access.level = accessLevel
             else {
@@ -68,57 +90,89 @@ function SetAccessLevel({ user }) {
 
             const updatedUser = await usersApi.update(user._id, user)
 
-            setUsers(users.map(u => u._id === updatedUser._id ? updatedUser : u))
+            setUsers(users.map((u) => u._id === updatedUser._id ? updatedUser : u))
 
         } catch (exception) { console.log('exception: ', exception) }
     }
 
     return (
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-xl">
             <DialogHeader>
                 <DialogTitle className=''>Määritä käytäjäkohtaiset Käyttöoikeudet sovelluksiin</DialogTitle>
                 <DialogDescription>
                     Tee muutoksia käyttäjän käyttöoikeuksiin. Paina Tallenna, kun olet valmis.
                 </DialogDescription>
             </DialogHeader>
-            <div className="flex items-end gap-4 py-4">
-                <div className='flex flex-col gap-2'>
-                    <Label htmlFor="kayttooikeustaso" className="">
-                        Käyttöoikeustaso
-                    </Label>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <ul className="flex flex-col items-start">
+                        {fields.map((field, index) => (
+                            <li key={field.id} className="flex items-end gap-4 py-2">
+                                <FormField
+                                    control={form.control}
+                                    name={`user.${index}.accesslevel`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Käyttöoikeustaso</FormLabel>
+                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                <FormControl>
+                                                    <SelectTrigger className="w-52">
+                                                        <SelectValue placeholder="Valitse käyttötaso" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Käyttötaso</SelectLabel>
+                                                        {accessLevels.map((a) => <SelectItem key={a.accessLevel} value={a.accessLevel.toString()}>{a.role}</SelectItem>)}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )} />
+                                <FormField
+                                    control={form.control}
+                                    name={`user.${index}.app`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Sovellus</FormLabel>
+                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                <FormControl>
+                                                    <SelectTrigger className="w-52">
+                                                        <SelectValue placeholder="Valitse sovellus" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Sovellus</SelectLabel>
+                                                        {services.map((s) => <SelectItem key={s._id} value={s._id.toString()}>{s.name}</SelectItem>)}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )} />
 
-                    <Select onValueChange={(value) => setAccessLevel(value)}>
-                        <SelectTrigger className="w-44">
-                            <SelectValue placeholder="Valitse käyttötaso" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>käyttötaso</SelectLabel>
-                                {accessLevels.map((access) => <SelectItem key={access.accessLevel} value={access.accessLevel}>{access.role}</SelectItem>)}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="kayttooikeustaso" className="">
-                        Sovellus
-                    </Label>
-                    <Select
-                        onValueChange={(value) =>
-                            setService(services.find(s => s._id === value))
-                        }>
-                        <SelectTrigger className="w-52">
-                            <SelectValue placeholder="Valitse sovellus" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Sovellus</SelectLabel>
-                                {services.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
+                                <Button variant='ghost' type="button" onClick={() => remove(index)}>
+                                    <Trash2 className="w-4 h-4" />
+                                    <span className="sr-only">poista sovellus</span>
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="flex items-center gap-4 py-4">
+                        <Button
+                            type="button"
+                            variant='ghost'
+                            onClick={() => append({ accesslevel: "", app: "" })}
+                        >
+                            <Plus className="w-4 h-4" />
+                            <span className="sr-only">lisaa sovellus</span>
+                        </Button>
+                        <Button variant='default' type='submit'>Tallenna</Button>
+                    </div>
+                </form>
+            </Form>
             <DialogFooter>
                 <Button variant='destructive' onClick={() => console.log('poista')}>
                     Poista
@@ -168,7 +222,7 @@ function TableOptions({ u }) {
                         <DropdownMenuItem onClick={async () => {
                             if (confirm('Oletko varma että haluat poistaa käyttäjän?')) {
                                 await usersApi.remove(u._id)
-                                setUsers(users.filter(user => user._id !== u._id))
+                                setUsers(users.filter((user) => user._id !== u._id))
                             }
                         }}>
                             poista
@@ -257,8 +311,9 @@ export default function Users() {
                                             if (!service) return null
 
                                             return (
-                                                <li key={a.service + u._id}>
-                                                    {service.name}: {access?.role}
+                                                <li key={a.service + u._id} className='flex gap-1 items-center'>
+                                                    <p className='text-xs opacity-70'>{service.name}:</p>
+                                                    <span className='text-xs'>{access?.role}</span>
                                                 </li>
                                             )
                                         })}

@@ -56,17 +56,17 @@ export default function ServiceForm() {
     useEffect(() => {
         if (id !== "new") setEditing(true);
     }, [id]);
-    //TODO:after refresh, the form is empty
+    //TODO:after refresh, the form is empty when editing
     useEffect(() => {
         if (editing === true) {
             const service = services.find((s) => s._id === id);
 
             if (!service) return;
 
-            setName(service.name);
-            setDomain(service.domain);
-            setProtocol(service.protocol);
-            setServiceKey(service.serviceKey);
+            setName(localStorage.getItem(service.name));
+            setDomain(localStorage.getItem(service.domain));
+            setProtocol(localStorage.getItem(service.protocol));
+            setServiceKey(localStorage.getItem(service.serviceKey));
         }
     }, [editing]);
 
