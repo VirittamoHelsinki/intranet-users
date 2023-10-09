@@ -16,7 +16,7 @@ let nextPrune = Date.now()
 // Remove expired tokens from the tokenStorage.
 const pruneTokenBlacklist = () => {
  
-  // Dont run the function if it has been run in the last 24 hours.
+  // Dont run the function if it has been run in the last 6 hours.
   if (Date.now() < nextPrune) return
   
   // Remove expired tokens from the tokenBlacklist.
@@ -30,8 +30,8 @@ const pruneTokenBlacklist = () => {
     } catch (error) { return false }
   })
 
-  // Prune the blacklist once every 12 hours.
-  nextPrune = Date.now() + 1000 * 60 * 60 * 12
+  // Prune the blacklist once every 6 hours.
+  nextPrune = Date.now() + 1000 * 60 * 60 * 6
 }
 
 const addTokenToBlacklist = (req, res, next) => {
