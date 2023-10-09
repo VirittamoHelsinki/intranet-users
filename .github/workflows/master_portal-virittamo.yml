@@ -70,6 +70,12 @@ jobs:
           with:
             username: ${{ secrets.DOCKER_HUB_USERNAME }}
             password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        - name: Create .env file in client folder
+          run: |
+            echo "${{ secrets.ENV_FILE_CLIENT }}" > ./client/.env
+        - name: Create .env file in server folder
+          run: |
+            echo "${{ secrets.ENV_FILE_SERVER }}" > ./server/.env
         - name: Build and push to Docker Hub
           uses: docker/build-push-action@v2
           with: 
