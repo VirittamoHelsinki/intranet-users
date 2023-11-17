@@ -50,8 +50,9 @@ const getTokenFrom = (req) => {
 
   // String 'bearer ' is removed from the authorization header,
   // if it exists.
-  if (authorization && authorization.toLowerCase().startsWith("bearer "))
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")){
     return authorization.substring(7);
+  }
 
   return null;
 };
@@ -83,25 +84,6 @@ const setUserUsingToken = (decodedToken, res) => {
   };
 };
 
-// Getting the user information from the database, requires
-// a database request. This would run for every service request
-const setUserUsingDatabase = async (decodedToken, res, next) => {
-  try {
-    const user = await User.findById(decodedToken._id);
-
-    res.locals.user = {
-      _id: user._id,
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      admin: user.admin,
-      access: user.access,
-    };
-  } catch (error) {
-    next(error);
-  }
-};
-
 // Middleware that checks if the request has a valid token, in the authroziation header.
 const requireAuthorization = async (req, res, next) => {
   try {
@@ -122,7 +104,7 @@ const requireAuthorization = async (req, res, next) => {
 
     let decodedToken = {};
 
-    decodedToken = jwt.verify(token, secret);
+    decodedToken = verifyJwt(token, secret);
 
     if (!decodedToken._id) {
       return res.status(401).json({ error: "invalid token" });
