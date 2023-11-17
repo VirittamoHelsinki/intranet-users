@@ -1,59 +1,66 @@
-const userRouter = require('express').Router()
-const User = require('../models/user')
-const Service = require('../models/service')
-const bcrypt = require('bcrypt')
-const { requireAuthorization, userIsAdmin } = require('../middleware/authorize')
-const { environment } = require('../config.js')
+import { Router } from "express";
+import User from "../models/user.js";
+import Service from "../models/service.js";
+import bcrypt from "bcrypt";
+import { requireAuthorization, userIsAdmin } from "../middleware/authorize.js";
 
-const virittamoEmail = email => {
-  if (email.endsWith('@edu.hel.fi')) return true
-  if (email.endsWith('@hel.fi'))     return true
+const userRouter = Router();
 
-  return false
-}
+const virittamoEmail = (email) => {
+  if (email.endsWith("@edu.hel.fi")) return true;
+  if (email.endsWith("@hel.fi")) return true;
+
+  return false;
+};
 
 // Validate password, to contain at least one number, one lowercase letter,
 // one uppercase letter and to be at least 10 characters long.
-const validatePassword = password => {
-  let valid = password.length >= 10
+const validatePassword = (password) => {
+  let valid = password.length >= 10;
 
-  if (valid) valid = /\d/.test(password)
+  if (valid) valid = /\d/.test(password);
 
-  if (valid) valid = /[a-z]/.test(password)
-                  || /å/.test(password)
-                  || /ä/.test(password)
-                  || /ö/.test(password)
+  if (valid)
+    valid =
+      /[a-z]/.test(password) ||
+      /å/.test(password) ||
+      /ä/.test(password) ||
+      /ö/.test(password);
 
-  if (valid) valid = /[A-Z]/.test(password)
-                  || /Å/.test(password)
-                  || /Ä/.test(password)
-                  || /Ö/.test(password)
+  if (valid)
+    valid =
+      /[A-Z]/.test(password) ||
+      /Å/.test(password) ||
+      /Ä/.test(password) ||
+      /Ö/.test(password);
 
-  return valid
-}
+  return valid;
+};
 
 const addAccessLevel = async (user, level) => {
   try {
-    const services = await Service.find({})
+    const services = await Service.find({});
 
-    user.access = services.map(service => ({
+    user.access = services.map((service) => ({
       service: service._id,
       level,
-      name: service.name
-    }))
-
-  } catch (exception) { next(exception) }
-}
+      name: service.name,
+    }));
+  } catch (exception) {
+    next(exception);
+  }
+};
 
 // Register a new user.
-userRouter.post('/', async (req, res) => {
+userRouter.post("/", async (req, res) => {
   try {
-    let { email, password, firstname, lastname } = req.body
+    let { email, password, firstname, lastname } = req.body;
 
-    if (!email)    return res.status(400).json({ error: 'email is missing' })
-    if (!password) return res.status(400).json({ error: 'password is missing' })
+    if (!email) return res.status(400).json({ error: "email is missing" });
+    if (!password)
+      return res.status(400).json({ error: "password is missing" });
 
-    email = email.toLowerCase()
+    email = email.toLowerCase();
 
     // When in production mode, check if the email is valid for virittamo.
     // if (environment === 'production' && !virittamoEmail(email)) {
@@ -68,118 +75,118 @@ userRouter.post('/', async (req, res) => {
     //   })
     // }
 
-    const saltRounds = 12
-    const passwordHash = await bcrypt.hash(password, saltRounds)
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
     const user = new User({
       email,
       passwordHash,
       firstname,
       lastname,
-      access: []
-    })
+      access: [],
+    });
 
     // Add access level 1 by default to all services.
-    await addAccessLevel(user, 1)
+    await addAccessLevel(user, 1);
 
-    const savedUser = await user.save()
+    const savedUser = await user.save();
 
-    res.json(User.format(savedUser))
-
+    res.json(User.format(savedUser));
   } catch (exception) {
-    console.log(exception.message)
-    if (exception.message.includes('User validation failed')){
-      res.status(400).json({ error: 'user validation failed' })
+    console.log(exception.message);
+    if (exception.message.includes("User validation failed")) {
+      res.status(400).json({ error: "user validation failed" });
     } else {
-      res.status(500).json({ error: 'something went wrong...' })
+      res.status(500).json({ error: "something went wrong..." });
     }
   }
-})
+});
 
 // From here on require authentication on all routes.
-userRouter.all('*', requireAuthorization)
+userRouter.all("*", requireAuthorization);
 
 // Update routes will be created here.
 
 // A Client with a valid token can get their user data.
-userRouter.get('/', async (req, res, next) => {
+userRouter.get("/", async (_req, res, next) => {
   try {
-    let { _id } = res.locals.user
+    let { _id } = res.locals.user;
 
     // Fetch user to make sure that the user received is up to date.
-    const user = await User.findById(_id)
+    const user = await User.findById(_id);
 
-    if (!user) return res.status(401).json({
-      error: `Cannot find user with id: ${_id}`
-    })
+    if (!user)
+      return res.status(401).json({
+        error: `Cannot find user with id: ${_id}`,
+      });
 
-    res.json(User.format(user))
-
-  } catch (exception) { next(exception) }
-})
-
+    res.json(User.format(user));
+  } catch (exception) {
+    next(exception);
+  }
+});
 
 // From here on require that the user is an admin on all routes.
-userRouter.all('*', userIsAdmin)
-
+userRouter.all("*", userIsAdmin);
 
 // Get all users.
-userRouter.get('/all', async (req, res, next) => {
+userRouter.get("/all", async (_req, res, next) => {
   try {
-    const users = await User.find({})
+    const users = await User.find({});
 
-    res.json(users.map(User.format))
-
-  } catch (exception) { next(exception) }
-})
-
+    res.json(users.map(User.format));
+  } catch (exception) {
+    next(exception);
+  }
+});
 
 // Delete a user.
-userRouter.delete('/:id', async (req, res, next) => {
+userRouter.delete("/:id", async (req, res, next) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
-    const user = await User.findById(id)
+    const user = await User.findById(id);
 
-    if (!user) return res.status(401).json({
-      error: `Cannot find user with id: ${id}`
-    })
+    if (!user)
+      return res.status(401).json({
+        error: `Cannot find user with id: ${id}`,
+      });
 
-    await User.findByIdAndRemove(id)
+    await User.findByIdAndRemove(id);
 
-    res.status(204).end()
-
-  } catch (exception) { next(exception) }
-})
-
+    res.status(204).end();
+  } catch (exception) {
+    next(exception);
+  }
+});
 
 // An admin user can update any users admin and access rights.
-userRouter.put('/:id', async (req, res, next) => {
+userRouter.put("/:id", async (req, res, next) => {
   try {
-    const id = req.params.id
-    let { admin, access, firstname, lastname } = req.body
-    
+    const id = req.params.id;
+    let { admin, access, firstname, lastname } = req.body;
+
     if (!admin && !access && !firstname && !lastname) {
-      return res.status(400).json({ error: 'No valid fields to update.'})
+      return res.status(400).json({ error: "No valid fields to update." });
     }
 
     // If an access level is marked 0, remove it from the list.
-    if (access) access = access.filter(a => a.level != 0)
+    if (access) access = access.filter((a) => a.level != 0);
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { admin, access, firstname, lastname },
       { new: true }
-    )
+    );
 
     if (!updatedUser) {
-      return res.status(400).json({ error: 'User does not exist.' })
+      return res.status(400).json({ error: "User does not exist." });
     }
 
-    res.json(User.format(updatedUser))
+    res.json(User.format(updatedUser));
+  } catch (exception) {
+    next(exception);
+  }
+});
 
-  } catch (exception) { next(exception) }
-})
-
-
-module.exports = userRouter
+export { userRouter };

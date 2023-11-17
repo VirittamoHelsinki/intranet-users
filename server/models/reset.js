@@ -1,22 +1,22 @@
-const mongoose = require('mongoose')
+import mongoose from "mongoose";
 
 const resetSchema = new mongoose.Schema({
   email: String,
   expireAt: {
     type: Date,
-    default: () => Date.now() + 600
-  }
-})
+    default: () => Date.now() + 600,
+  },
+});
 
 resetSchema.statics.format = (reset) => {
-  const { _id, email } = reset
+  const { _id, email } = reset;
 
   return {
     _id,
-    email
-  }
-}
+    email,
+  };
+};
 
-const Reset = mongoose.model('Reset', resetSchema)
+const Reset = mongoose.model("Reset", resetSchema);
 
-module.exports = Reset
+export default Reset;
