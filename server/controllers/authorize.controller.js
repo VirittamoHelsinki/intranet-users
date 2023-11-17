@@ -4,19 +4,12 @@
 // 2. Also has paths that authorize a user to get a valid token for another
 // service.
 import axios from "axios";
-import { Router } from "express";
 import User from "../models/user.js";
 import Service from "../models/service.js";
 import {
-  requireAuthorization,
   addTokenToBlacklist,
   getTokenFrom,
 } from "../middleware/authorize.js";
-
-const authorizeRouter = Router();
-
-// From here on require valid authorization(token) on all routes.
-authorizeRouter.all("*", requireAuthorization);
 
 // Route that authorizes the user to use a specific service,
 // that does authorization by itself. Called when the user
@@ -24,7 +17,7 @@ authorizeRouter.all("*", requireAuthorization);
 // already has a valid token on the users service.
 // Returns a key that a client can use to get a token from
 // the service defined in the domain parameter.
-authorizeRouter.get("/app/:domain", async (req, res, next) => {
+async function authorizeService(req, res, next) {
   try {
     const { user } = res.locals;
     const domain = req.params.domain.toLowerCase();
@@ -64,11 +57,11 @@ authorizeRouter.get("/app/:domain", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // Returns user information, for a client with a valid token.
 // The simplest way to check that the user has a valid token.
-authorizeRouter.get("/", async (_req, res, next) => {
+async function userInformation(_req, res, next) {
   try {
     const { user } = res.locals;
 
@@ -76,11 +69,11 @@ authorizeRouter.get("/", async (_req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // Cheks whether the user has a high enough authorization level requested by
 // the service.
-authorizeRouter.get("/service/:name/:level", async (req, res, next) => {
+async function checkAuthorizationLevel(req, res, next) {
   try {
     const { user } = res.locals;
     let { name, level } = req.params;
@@ -118,11 +111,11 @@ authorizeRouter.get("/service/:name/:level", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // User can blacklist their token by logging out so that it
 // will no longer function for user authorization.
-authorizeRouter.get("/logout", async (req, res, next) => {
+async function logout(req, res, next) {
   try {
     // Add the token to the blacklist.
     addTokenToBlacklist(req, res, next);
@@ -131,6 +124,6 @@ authorizeRouter.get("/logout", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
-export { authorizeRouter };
+export { authorizeService, userInformation, checkAuthorizationLevel, logout };

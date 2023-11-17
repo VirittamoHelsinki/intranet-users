@@ -12,6 +12,7 @@
     "build:prod": "rm -rf build && cd ../client && npm run build:prod && cp -r dist ../server/build"
   },
   "dependencies": {
+    "argon2": "^0.31.2",
     "axios": "1.6.2",
     "bcrypt": "5.1.1",
     "config": "^3.3.9",

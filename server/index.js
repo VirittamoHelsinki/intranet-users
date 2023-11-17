@@ -19,16 +19,16 @@ import { authorizeRouter } from "./controllers/authorizeRouter.js";
 import { authenticateRouter } from "./controllers/authenticateRouter.js";
 import { pwResetRouter } from "./controllers/passwordResetRouter.js";
 import { serviceRouter } from "./controllers/serviceRouter.js";
+import log from "./utils/logger.js";
+import { deserializeUser } from "./middleware/deserializeUser.js";
+import { router } from "./routes/index.js";
 
 const app = express();
 
-// Connect to database.
-connectMongoose();
-
 // Middleware that needs to be added before routes are defined.
 app.use(cors());
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(deserializeUser);
 app.use(express.static("build"));
 app.use(requestLogger);
 
@@ -36,6 +36,8 @@ app.use(requestLogger);
 app.get("/api", (_req, res) => {
   res.send("<h1>Backend API starts here</h1> ");
 });
+
+app.use(router)
 
 // Add routers.
 app.use("/api/users", userRouter);
@@ -62,7 +64,9 @@ app.on("close", () => {
 
 // Start server on the configured port.
 app.listen(port, () => {
-  console.log("users-server running on port:", port);
+  log.info(`users-server running on port: ${port}`);
+  // Connect to database.
+  connectMongoose();
 });
 
 export default app;

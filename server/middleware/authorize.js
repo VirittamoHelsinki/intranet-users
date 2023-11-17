@@ -1,4 +1,3 @@
-import User from "../models/user.js";
 import { secret } from "../utils/config.js";
 import { verifyJwt } from "../utils/jwt.js";
 
@@ -14,7 +13,7 @@ let tokenBlacklist = [];
 let nextPrune = Date.now();
 
 // Remove expired tokens from the tokenStorage.
-const pruneTokenBlacklist = () => {
+function pruneTokenBlacklist() {
   // Dont run the function if it has been run in the last 6 hours.
   if (Date.now() < nextPrune) return;
 
@@ -34,7 +33,7 @@ const pruneTokenBlacklist = () => {
   nextPrune = Date.now() + 1000 * 60 * 60 * 6;
 };
 
-const addTokenToBlacklist = (req, res, next) => {
+function addTokenToBlacklist(req, res, next) {
   try {
     const token = getTokenFrom(req);
 
@@ -45,19 +44,19 @@ const addTokenToBlacklist = (req, res, next) => {
 };
 
 // Parse the token out of the authorization header.
-const getTokenFrom = (req) => {
+function getTokenFrom(req) {
   const authorization = req.get("authorization");
 
   // String 'bearer ' is removed from the authorization header,
   // if it exists.
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")){
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
     return authorization.substring(7);
   }
 
   return null;
 };
 
-const processTokenErrors = (error, _req, res, next) => {
+function processTokenErrors(error, _req, res, next) {
   if (error.name === "TokenExpiredError") {
     console.log("User token has expired!");
 
@@ -73,7 +72,7 @@ const processTokenErrors = (error, _req, res, next) => {
 // It does not require a database query. If this is used however
 // the user access rights only update once the user logs out
 // and logs back in or when the token expires.
-const setUserUsingToken = (decodedToken, res) => {
+function setUserUsingToken(decodedToken, res) {
   res.locals.user = {
     _id: decodedToken._id,
     email: decodedToken.email,
@@ -85,7 +84,7 @@ const setUserUsingToken = (decodedToken, res) => {
 };
 
 // Middleware that checks if the request has a valid token, in the authroziation header.
-const requireAuthorization = async (req, res, next) => {
+async function requireAuthorization(req, res, next) {
   try {
     // Check if it is time to prune the tokenBlacklist.
     pruneTokenBlacklist();
@@ -129,7 +128,7 @@ const requireAuthorization = async (req, res, next) => {
 // Middleware that ensures that the user making the request
 // is an admin. Must be applied after the requireAuthorization
 // middleware. (because res.locals.user must be defined)
-const userIsAdmin = (req, res, next) => {
+function userIsAdmin(_req, res, next) {
   if (!res.locals.user.admin) {
     return res.status(401).json({ error: "unauthorized user" });
   }

@@ -2,14 +2,11 @@
 // (Requests that require email/username and password.)
 import bcrypt from "bcrypt";
 import axios from "axios";
-import { Router } from "express";
 import User from "../models/user.js";
 import Service from "../models/service.js";
 
-const authenticateRouter = Router();
-
 // Authenticate user without forwarding them to any service.
-authenticateRouter.post("/", async (req, res) => {
+async function authenticateUser(req, res) {
   let { email, password } = req.body;
 
   if (!email) return res.status(400).json({ error: "email is missing" });
@@ -34,16 +31,15 @@ authenticateRouter.post("/", async (req, res) => {
 
   // Sign a token.
   const token = user.generateJWT();
-  const refreshToken = user.generateRefreshToken();
 
   // Return the user and the token.
   res.status(200).send({ token, ...User.format(user) });
-});
+}
 
 // Authenticate user and authorize them to use a specific service.
 // Returns a key that a client can use to get a token from
 // the service defined in the domain parameter.
-authenticateRouter.post("/:domain", async (req, res, next) => {
+async function autherizeUser(req, res, next) {
   try {
     let { email, password } = req.body;
     const domain = req.params.domain.toLowerCase();
@@ -100,6 +96,6 @@ authenticateRouter.post("/:domain", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
-export { authenticateRouter };
+export { authenticateUser, autherizeUser };
