@@ -1,15 +1,10 @@
 // This router handles adding and removing service entries to the system.
 // Authentication and authorization is only allowed for systems in the
 // the database.
-
-import { Router } from "express";
 import Service from "../models/service.js";
-import { requireAuthorization, userIsAdmin } from "../middleware/authorize.js";
-
-const serviceRouter = Router();
 
 // Get all public information about the services.
-serviceRouter.get("/public", async (_req, res, next) => {
+async function getAllPublicServices(_req, res, next) {
   try {
     const services = await Service.find({});
 
@@ -17,16 +12,10 @@ serviceRouter.get("/public", async (_req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
-
-// From here on require valid authorization(token) on all routes.
-serviceRouter.all("*", requireAuthorization);
-
-// From here on require that the user is an admin on all routes.
-serviceRouter.all("*", userIsAdmin);
+}
 
 // Get all information about each service.
-serviceRouter.get("/", async (_req, res, next) => {
+async function getAllServices(_req, res, next){
   try {
     const services = await Service.find({});
 
@@ -34,10 +23,10 @@ serviceRouter.get("/", async (_req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // An admin user can add a new domain to the system.
-serviceRouter.post("/", async (req, res, next) => {
+async function createservice(req, res, next) => {
   try {
     let { name, domain, protocol, serviceKey } = req.body;
 
@@ -65,10 +54,10 @@ serviceRouter.post("/", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // An admin user can delete a service.
-serviceRouter.delete("/:id", async (req, res, next) => {
+async function deleteService(req, res, next) {
   try {
     const { id } = req.params;
 
@@ -82,10 +71,10 @@ serviceRouter.delete("/:id", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // An admin user can update a service.
-serviceRouter.put("/:id", async (req, res, next) => {
+async function updateService(req, res, next) {
   try {
     const { id } = req.params;
     let { name, domain, protocol, serviceKey } = req.body;
@@ -118,6 +107,6 @@ serviceRouter.put("/:id", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
-export { serviceRouter };
+export { getAllPublicServices, getAllServices, createservice, deleteService, updateService };

@@ -1,7 +1,7 @@
 import express from "express";
-import {user} from "./user.routes.js";
-import {auth} from "./auth.routes.js";
-import {service} from "./service.routes.js";
+import { user } from "./user.routes.js";
+import { auth } from "./auth.routes.js";
+import { service } from "./service.routes.js";
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router.use(user);
 router.use(auth);
 router.use(service);
 
-export {router};
+export { router };
