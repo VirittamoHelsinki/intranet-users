@@ -5,6 +5,8 @@ With SSO, a user only has to enter their login credentials (email, password, etc
 
 ## Setup
 
+create env file for backend and frontend
+
 ```sh
 // install backend and frontend
 npm run install
@@ -26,6 +28,7 @@ npm run dev
 
 ### TODO
 
+- [ ] create new database due to old ones not working anymore
 - [ ] add the ability to add and remove multiple services from a user
 - [ ] fix edit service so that the form data persist after a refresh
 - [ ] migrate from axios to fetch due to being pointless dependency **RECOMMENDED**
