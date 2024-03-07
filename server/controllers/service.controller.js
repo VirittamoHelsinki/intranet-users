@@ -1,7 +1,7 @@
 // This router handles adding and removing service entries to the system.
 // Authentication and authorization is only allowed for systems in the
 // the database.
-import Service from "../models/service.js";
+import Service from "../models/service.model.js";
 
 // Get all public information about the services.
 async function getAllPublicServices(_req, res, next) {
@@ -15,7 +15,7 @@ async function getAllPublicServices(_req, res, next) {
 }
 
 // Get all information about each service.
-async function getAllServices(_req, res, next){
+async function getAllServices(_req, res, next) {
   try {
     const services = await Service.find({});
 
@@ -26,7 +26,7 @@ async function getAllServices(_req, res, next){
 }
 
 // An admin user can add a new domain to the system.
-async function createservice(req, res, next) => {
+async function createService(req, res, next) {
   try {
     let { name, domain, protocol, serviceKey } = req.body;
 
@@ -109,4 +109,4 @@ async function updateService(req, res, next) {
   }
 }
 
-export { getAllPublicServices, getAllServices, createservice, deleteService, updateService };
+export { getAllPublicServices, getAllServices, createService, deleteService, updateService };

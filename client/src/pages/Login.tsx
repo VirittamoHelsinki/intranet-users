@@ -9,7 +9,14 @@ import { authenticate, authenticateForService } from "~/api/authenticate";
 import { authorizeForService, setToken } from "~/api/authorize";
 import { Input } from "~/@/components/ui/input";
 import { Button } from "~/@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/@/components/ui/form";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -27,27 +34,27 @@ export default function Login() {
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-  })
-
-  async function authorizeAndRedirectUserToService() {
-    const data = await authorizeForService(domain);
-    const service = publicServices?.find((s) => s.domain === domain);
-    console.log(publicServices);
-
-    if (!service) return console.log("service not found for domain: ", domain);
-
-    const protocol = service.protocol;
-
-    window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`;
-  };
+  });
 
   useEffect(() => {
+    async function authorizeAndRedirectUserToService() {
+      const data = await authorizeForService(domain);
+      const service = publicServices?.find((s) => s.domain === domain);
+      console.log(publicServices);
+
+      if (!service)
+        return console.log("service not found for domain: ", domain);
+
+      const protocol = service.protocol;
+
+      window.location.href = `${protocol}://${domain}/?user_key=${data.user_key}`;
+    }
     if (user && domain && publicServices?.find((s) => s.domain === domain)) {
       // If the user is already logged in and the domain parameter is specified,
       // redirect the user to the external service with the service key.
       authorizeAndRedirectUserToService();
     }
-  }, [publicServices?.length, user]);
+  }, [domain, publicServices, publicServices?.length, user]);
 
   if (domain && !publicServices?.find((s) => s.domain === domain)) {
     return (
@@ -69,7 +76,6 @@ export default function Login() {
   }
 
   async function onLogin(value: z.infer<typeof loginSchema>) {
-
     let authenticatedUser = null;
 
     try {
@@ -77,10 +83,13 @@ export default function Login() {
         // If an external service was specified with the domain parameter.
         authenticatedUser = await authenticateForService(
           { email: value.email, password: value.password },
-          domain,
+          domain
         );
       } else {
-        authenticatedUser = await authenticate({ email: value.email, password: value.password });
+        authenticatedUser = await authenticate({
+          email: value.email,
+          password: value.password,
+        });
       }
     } catch (exception) {
       console.log("exception: ", exception);
@@ -111,7 +120,7 @@ export default function Login() {
         window.location.href = `${protocol}://${domain}/?user_key=${authenticatedUser.user_key}`;
       } else navigate("/");
     } else alert("Failed to login. Wrong email or password?");
-  };
+  }
 
   return (
     <main className="flex flex-col grow justify-center items-center gap-3 px-4 pb-2 pt-4 sm:px-8 sm:py-4">
@@ -121,7 +130,10 @@ export default function Login() {
           Muista käyttää etunimi.sukunimi@edu.hel.fi sähköpostia
         </p>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onLogin)} className="flex flex-col gap-4">
+          <form
+            onSubmit={form.handleSubmit(onLogin)}
+            className="flex flex-col gap-4"
+          >
             <FormField
               control={form.control}
               name="email"
@@ -142,7 +154,11 @@ export default function Login() {
                 <FormItem>
                   <FormLabel>Salasana</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="superS4lanenSalasana" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="superS4lanenSalasana"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

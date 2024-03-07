@@ -1,43 +1,26 @@
-import { Router } from "express";
-import User from "../models/user.js";
-import Service from "../models/service.js";
+import User from "../models/user.model.js";
+import Service from "../models/service.model.js";
 import bcrypt from "bcrypt";
-import { requireAuthorization, userIsAdmin } from "../middleware/authorize.js";
+import Reset from "../models/reset.model.js";
+import { sendEmail } from "../utils/mailer.js";
 
-const userRouter = Router();
-
-const virittamoEmail = (email) => {
-  if (email.endsWith("@edu.hel.fi")) return true;
-  if (email.endsWith("@hel.fi")) return true;
-
-  return false;
+function virittamoEmail(email) {
+  const regex = /@(edu\.)?hel\.fi$/;
+  return regex.test(email);
 };
 
 // Validate password, to contain at least one number, one lowercase letter,
 // one uppercase letter and to be at least 10 characters long.
-const validatePassword = (password) => {
-  let valid = password.length >= 10;
+function validatePassword(password) {
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const isAtLeast10Chars = password.length >= 10;
 
-  if (valid) valid = /\d/.test(password);
-
-  if (valid)
-    valid =
-      /[a-z]/.test(password) ||
-      /å/.test(password) ||
-      /ä/.test(password) ||
-      /ö/.test(password);
-
-  if (valid)
-    valid =
-      /[A-Z]/.test(password) ||
-      /Å/.test(password) ||
-      /Ä/.test(password) ||
-      /Ö/.test(password);
-
-  return valid;
+  return hasUpperCase && hasLowerCase && hasNumbers && isAtLeast10Chars;
 };
 
-const addAccessLevel = async (user, level) => {
+async function addAccessLevel(user, level) {
   try {
     const services = await Service.find({});
 
@@ -52,7 +35,7 @@ const addAccessLevel = async (user, level) => {
 };
 
 // Register a new user.
-userRouter.post("/", async (req, res) => {
+async function createUser(req, res) {
   try {
     let { email, password, firstname, lastname } = req.body;
 
@@ -100,15 +83,12 @@ userRouter.post("/", async (req, res) => {
       res.status(500).json({ error: "something went wrong..." });
     }
   }
-});
-
-// From here on require authentication on all routes.
-userRouter.all("*", requireAuthorization);
+}
 
 // Update routes will be created here.
 
 // A Client with a valid token can get their user data.
-userRouter.get("/", async (_req, res, next) => {
+async function getUser(_req, res, next) {
   try {
     let { _id } = res.locals.user;
 
@@ -124,13 +104,10 @@ userRouter.get("/", async (_req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
-
-// From here on require that the user is an admin on all routes.
-userRouter.all("*", userIsAdmin);
+}
 
 // Get all users.
-userRouter.get("/all", async (_req, res, next) => {
+async function getAllUsers(_req, res, next) {
   try {
     const users = await User.find({});
 
@@ -138,10 +115,10 @@ userRouter.get("/all", async (_req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // Delete a user.
-userRouter.delete("/:id", async (req, res, next) => {
+async function deleteUser(req, res, next) {
   try {
     const { id } = req.params;
 
@@ -158,10 +135,10 @@ userRouter.delete("/:id", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
 // An admin user can update any users admin and access rights.
-userRouter.put("/:id", async (req, res, next) => {
+async function updateUser(req, res, next) {
   try {
     const id = req.params.id;
     let { admin, access, firstname, lastname } = req.body;
@@ -187,6 +164,130 @@ userRouter.put("/:id", async (req, res, next) => {
   } catch (exception) {
     next(exception);
   }
-});
+}
 
-export { userRouter };
+// Add a html body to the email.
+const htmlForm = (text) => {
+  return `<body>
+            <div align="center">
+              ${text}
+            </div>
+          </body>`;
+};
+
+// Get reset form with id.
+async function getRestId(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const reset = await Reset.findById(id);
+
+    if (!reset) {
+      return res.status(404).send(htmlForm("<h2>The link has expired</h2>"));
+    }
+
+    res.send(
+      htmlForm(`<h1>Changing your password</h1>
+            <form action="/api/reset/${id}" method="post">
+              New password:
+              <br>
+              <input type="text" name="password">
+              <button type="submit">Update</button>
+            </form>`)
+    );
+  } catch (exception) {
+    next(exception);
+  }
+}
+
+// Update password with id if the reset has not expired.
+async function updatePassword(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    const reset = await Reset.findById(id);
+
+    if (!reset) {
+      return res.status(404).send(htmlForm("<h2>The link has expired<h2>"));
+    }
+    console.log(password);
+    console.log(reset.email);
+
+    const user = await User.findOne({ email: reset.email });
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    await User.findByIdAndUpdate(
+      user._id,
+      { password: passwordHash },
+      { new: true }
+    );
+
+    await Reset.findByIdAndDelete(reset._id);
+
+    return res
+      .status(200)
+      .send(htmlForm("<h2>Your password has been updated<h2>"));
+  } catch (exception) {
+    next(exception);
+  }
+}
+
+// Create and send a reset link to the users email.
+async function sendResetLink(req, res, next) {
+  try {
+    const body = req.body;
+
+    if (!body.email) {
+      return res.status(400).json({ error: "No email was provided." });
+    }
+    body.email = body.email.toLowerCase();
+
+    let user = null;
+
+    user = await User.findOne({ email: body.email });
+
+    if (!user) {
+      return res.status(400).json({ error: "There is no account with that email." });
+    }
+
+    // Create a reset entry.
+    const reset = new Reset({
+      email: user.email,
+    });
+
+    await reset.save();
+    const url = `${config.url}/api/reset/${createdReset._id}`;
+
+    await sendEmail({
+      to: user.email,
+      from: config.email,
+      subject: "Password reset request",
+      html: `
+        <h1> Hello ${user.email}!</h1>
+        <p>You can change your password using the link below</p>
+        <p>The link is valid for 10 minutes</p>
+        <a href="${url}">${url}</a>
+      `,
+    });
+
+    log.debug(`Password reset email sent to ${body.email}`)
+
+    return res.status(200).json({ success: "Reset created and email sent." });
+  } catch (exception) {
+    console.log(exception);
+
+    try {
+      if (exception.name.includes("User validation failed")) {
+        return res.status(400).json({ error: "email not found" });
+      } else {
+        next(exception);
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+}
+
+export { createUser, getUser, getAllUsers, deleteUser, updateUser, sendResetLink, getRestId, updatePassword };

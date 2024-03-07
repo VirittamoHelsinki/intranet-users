@@ -40,7 +40,7 @@ function UserNav() {
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
   // Run when the logout button is pressed.
-  const logOut = async () => {
+  async function logOut() {
     await logout();
     const cookies = new Cookies();
     cookies.remove("usersToken");

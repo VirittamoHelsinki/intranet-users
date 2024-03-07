@@ -1,4 +1,4 @@
-import log from "../utils/logger.js";
+import { log } from "../utils/logger.js";
 
 function requestLogger(req, _res, next) {
   log.info(`Method: ${req.method}`);

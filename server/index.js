@@ -1,50 +1,43 @@
-import path from "path";
-import url from "url"
+import path from "node:path";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 
 import {
+  errorHandler,
   requestLogger,
   unknownEndpoint,
-  errorHandler,
 } from "./middleware/middleware.js";
 
 // Sets up database connection management logic and starts the connection.
-import connectMongoose from "./utils/connectMongoose.js";
-import { port } from "./utils/config.js";
+import { connectDb } from "./utils/connectDb.js";
+import { port, environment } from "./utils/config.js";
 
-import { userRouter } from "./controllers/userRouter.js";
-import { authorizeRouter } from "./controllers/authorizeRouter.js";
-import { authenticateRouter } from "./controllers/authenticateRouter.js";
-import { pwResetRouter } from "./controllers/passwordResetRouter.js";
-import { serviceRouter } from "./controllers/serviceRouter.js";
-import log from "./utils/logger.js";
-import { deserializeUser } from "./middleware/deserializeUser.js";
-import { router } from "./routes/index.js";
+import { log } from "./utils/logger.js";
+import { user } from "./routes/user.routes.js";
+import { auth } from "./routes/auth.routes.js";
+import { service } from "./routes/service.routes.js";
 
 const app = express();
 
+console.log("build path", path.join(import.meta.dirname, "./build"));
 // Middleware that needs to be added before routes are defined.
-app.use(cors());
+if (environment === "development") app.use(cors());
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(deserializeUser);
-app.use(express.static("build"));
+app.use(express.static(path.join(import.meta.dirname, "./build")));
 app.use(requestLogger);
+
+app.get("/healthcheck", (_, res) => res.sendStatus(200));
 
 // Api information message. We could add some instructions here.
 app.get("/api", (_req, res) => {
   res.send("<h1>Backend API starts here</h1> ");
 });
 
-app.use(router)
-
-// Add routers.
-app.use("/api/users", userRouter);
-app.use("/api/services", serviceRouter);
-app.use("/api/authorize", authorizeRouter);
-app.use("/api/authenticate", authenticateRouter);
-app.use("/api/reset", pwResetRouter);
+app.use(user);
+app.use(auth);
+app.use(service);
 
 // Middleware that needs to be added after the routes are defined.
 app.use("/api/*", unknownEndpoint);
@@ -53,8 +46,7 @@ app.use(errorHandler);
 // Directs requests that dont match any of the routes previously
 // defined to the frontend.
 app.get("*", (_req, res) => {
-  const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-  res.sendFile(path.join(__dirname, "/build/index.html"));
+  res.sendFile(path.join(import.meta.dirname, "./build/index.html"));
 });
 
 // Close database connection when the app closes.
@@ -63,10 +55,9 @@ app.on("close", () => {
 });
 
 // Start server on the configured port.
-app.listen(port, () => {
+app.listen(port, async () => {
   log.info(`users-server running on port: ${port}`);
-  // Connect to database.
-  connectMongoose();
+  // await connectDb();
 });
 
 export default app;

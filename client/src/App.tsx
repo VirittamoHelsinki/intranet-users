@@ -16,19 +16,19 @@ import { Navbar } from "~/@/components/header";
 export default function App() {
   const setPublicServices = useServiceStore((state) => state.setPublicServices);
 
-  // Load the allowed domains from the server and save them to the state.
-  const loadPublicServices = async () => {
-    try {
-      const services = await getAllPublic();
-      setPublicServices(services);
-    } catch (exception) {
-      console.log("exception: ", exception);
-    }
-  };
-
   useEffect(() => {
+    // Load the allowed domains from the server and save them to the state.
+    async function loadPublicServices() {
+      try {
+        const services = await getAllPublic();
+        setPublicServices(services);
+      } catch (exception) {
+        console.log("exception: ", exception);
+      }
+    }
+
     loadPublicServices();
-  }, []);
+  }, [setPublicServices]);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -36,7 +36,10 @@ export default function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path={"/" || "/:domain" || "/login" || "/login/:domain"} element={<Login />} />
+          <Route
+            path={"/" || "/:domain" || "/login" || "/login/:domain"}
+            element={<Login />}
+          />
 
           <Route path="/register" element={<Register />} />
           <Route path="/register/:domain" element={<Register />} />

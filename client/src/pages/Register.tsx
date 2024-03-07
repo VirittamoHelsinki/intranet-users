@@ -10,7 +10,14 @@ import { Button } from "~/@/components/ui/button";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/@/components/ui/form";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -50,12 +57,14 @@ export default function Register() {
     );
   }
 
-
   async function onRegister(value: z.infer<typeof registerSchema>) {
     try {
       await createUser({ email: value.email, password: value.password });
 
-      const authenticatedUser = await authenticate({ email: value.email, password: value.password });
+      const authenticatedUser = await authenticate({
+        email: value.email,
+        password: value.password,
+      });
 
       if (authenticatedUser) {
         setToken(authenticatedUser.token);
@@ -74,7 +83,7 @@ export default function Register() {
     } catch (exception) {
       alert("Registration failed on the server.");
     }
-  };
+  }
 
   return (
     <main className="flex flex-col min-h-0 flex-1 gap-3 px-4 pb-2 pt-4 sm:px-8 sm:py-4">
@@ -85,7 +94,10 @@ export default function Register() {
             Muista käyttää etunimi.sukunimi@edu.hel.fi sähköpostia
           </p>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onRegister)} className="flex flex-col gap-3">
+            <form
+              onSubmit={form.handleSubmit(onRegister)}
+              className="flex flex-col gap-3"
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -106,7 +118,11 @@ export default function Register() {
                   <FormItem>
                     <FormLabel>Salasana</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="supers4lanensana" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="supers4lanensana"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,7 +135,11 @@ export default function Register() {
                   <FormItem>
                     <FormLabel>Salasana uudelleen</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="supers4lanensana" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="supers4lanensana"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

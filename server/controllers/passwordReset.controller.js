@@ -1,34 +1,11 @@
 import { Router } from "express";
-import User from "../models/user.js";
-import Reset from "../models/reset.js";
+import User from "../models/user.model.js";
+import Reset from "../models/reset.model.js";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
 import * as config from "../utils/config.js";
-import log from "../utils/logger.js";
+import { log } from "../utils/logger.js";
 
 const pwResetRouter = Router();
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: config.email,
-    pass: config.emailPW,
-  }
-});
-
-async function sendEmail(payload) {
-  transporter.sendMail(payload, (err, info) => {
-    if (err) {
-      log.error(err, "Error sending email");
-      return;
-    }
-    log.info(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
-  });
-}
-
 
 // Add a html body to the email.
 const htmlForm = (text) => {
@@ -159,7 +136,7 @@ pwResetRouter.post("/", async (req, res, next) => {
 
 
 
-     log.debug(`Password reset email sent to ${email}`)
+    log.debug(`Password reset email sent to ${email}`)
 
     return res.status(200).json({ success: "Reset created and email sent." });
   } catch (exception) {
