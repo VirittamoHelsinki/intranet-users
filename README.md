@@ -1,4 +1,4 @@
-# Virittamo portal SSO
+# Virittamo Portal SSO
 
 Single sign-on (SSO) is a technology which combines several different application login screens into one.
 With SSO, a user only has to enter their login credentials (email, password, etc.) one time on a single page to access all of their SaaS applications.
